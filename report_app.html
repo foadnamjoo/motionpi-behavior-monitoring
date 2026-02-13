@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Active Participants Report | MotionPI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --primary: #0f766e;
+      --primary-hover: #0d9488;
+      --primary-light: #ccfbf1;
+      --accent: #0369a1;
+      --error-bg: #fef2f2;
+      --error-text: #b91c1c;
+      --success-bg: #f0fdf4;
+      --success-text: #15803d;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.06);
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .app { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    .header {
+      background: var(--surface);
+      padding: 1.75rem 2rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+      border-left: 4px solid var(--primary);
+    }
+    .header h1 { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 0.35rem; }
+    .header p { font-size: 0.95rem; color: var(--text-muted); }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .card-title { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
+
+    .notice {
+      background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+      border: 1px solid #facc15;
+      color: #854d0e;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+    .notice strong { display: block; margin-bottom: 0.25rem; color: #713f12; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 1.25rem;
+      align-items: end;
+    }
+    @media (max-width: 700px) { .form-grid { grid-template-columns: 1fr; } }
+    .field label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem; }
+    .field input, .field select {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.95rem;
+      font-family: inherit;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--text);
+    }
+    .field input:focus, .field select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+    .field .hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+    .btn {
+      padding: 0.65rem 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: inherit;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.05s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+    .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
+    .btn-secondary { background: #f1f5f9; color: var(--text); }
+    .btn-secondary:hover { background: #e2e8f0; }
+    .btn svg { vertical-align: middle; margin-right: 0.4rem; }
+
+    .message { padding: 1rem 1.25rem; border-radius: var(--radius-sm); margin-bottom: 1rem; font-size: 0.9rem; display: none; }
+    .message.error { background: var(--error-bg); color: var(--error-text); display: block; }
+    .message.success { background: var(--success-bg); color: var(--success-text); display: block; }
+
+    .results-section { display: none; }
+    .results-section.visible { display: block; }
+    .results-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+    .results-meta { font-size: 0.9rem; color: var(--text-muted); }
+    .results-meta strong { color: var(--text); }
+    .downloads { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .downloads .btn { font-size: 0.875rem; padding: 0.5rem 1rem; }
+
+    .table-wrap { overflow-x: auto; border-radius: var(--radius-sm); border: 1px solid var(--border); margin: 1rem 0; }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    .data-table th, .data-table td { padding: 0.65rem 1rem; text-align: right; border-bottom: 1px solid var(--border); }
+    .data-table th { background: #f8fafc; font-weight: 600; color: var(--text); }
+    .data-table th:first-child, .data-table td:first-child { text-align: left; position: sticky; left: 0; background: var(--surface); }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover { background: #f8fafc; }
+    .data-table .num { font-variant-numeric: tabular-nums; }
+
+    .plot-section { margin-top: 2rem; }
+    .plot-section h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text); }
+    #plotContainer { border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); background: var(--surface); padding: 0.5rem; }
+    #plotContainer img { max-width: 100%; height: auto; display: block; }
+
+    .spinner { display: inline-block; width: 1.1em; height: 1.1em; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 0.5rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.95rem; }
+
+    .footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>Active Participants Report</h1>
+      <p>View participant activity by data source (location, ENMO, surveys, logs, batteries). Choose a time window, run the report, then download the table or chart.</p>
+    </header>
+
+    <div class="notice">
+      <strong>How to use</strong>
+      Enter the <strong>Report server URL</strong> if this page was opened from a file or another website (e.g. <code>http://server:5050</code>). Leave it blank if you opened this page from the report server itself.
+    </div>
+
+    <section class="card">
+      <h2 class="card-title">Step 1 — Configure</h2>
+      <div class="form-grid">
+        <div class="field">
+          <label for="serverUrl">Report server URL</label>
+          <input type="text" id="serverUrl" placeholder="http://your-server:5050" />
+          <span class="hint">Leave blank when using the page from the server</span>
+        </div>
+        <div class="field">
+          <label for="timeWindow">Time window</label>
+          <select id="timeWindow">
+            <option value="24">Last 24 hours</option>
+            <option value="7d">Last 7 days</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="timezone">Timezone</label>
+          <select id="timezone">
+            <option value="America/Denver">America/Denver (MST/SLC)</option>
+            <option value="UTC">UTC</option>
+          </select>
+        </div>
+        <div class="field">
+          <button type="button" id="runBtn" class="btn btn-primary">
+            <span id="runBtnText">Run report</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div id="message" class="message"></div>
+
+    <section id="results" class="results-section">
+      <div class="card">
+        <h2 class="card-title">Step 2 — Results</h2>
+        <div class="results-header">
+          <p class="results-meta" id="meta"></p>
+          <div class="downloads">
+            <button type="button" id="downloadCsvBtn" class="btn btn-secondary">Download CSV</button>
+            <button type="button" id="downloadPlotBtn" class="btn btn-secondary">Download chart (PNG)</button>
+          </div>
+        </div>
+        <div class="table-wrap" id="tableWrapper"></div>
+      </div>
+      <div class="card plot-section">
+        <h3>Chart — Record counts per participant (each panel has its own scale)</h3>
+        <div id="plotContainer" class="empty-state">Run the report to see the chart.</div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      Active Participants Report · MotionPI · Filenames include report date and time window for easy archiving.
+    </footer>
+  </div>
+
+  <script>
+    let lastResponse = null;
+
+    function showMessage(text, type) {
+      const el = document.getElementById('message');
+      el.textContent = text;
+      el.className = 'message ' + (type || 'error');
+      el.style.display = 'block';
+    }
+    function hideMessage() {
+      const el = document.getElementById('message');
+      el.className = 'message';
+      el.style.display = 'none';
+    }
+
+    function escapeCsvCell(val) {
+      const s = String(val);
+      if (/[",\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+      return s;
+    }
+    function tableToCsv(rows) {
+      return rows.map(row => row.map(escapeCsvCell).join(',')).join('\r\n');
+    }
+    function downloadBlob(blob, filename) {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function renderTable(rows) {
+      const wrap = document.getElementById('tableWrapper');
+      if (!rows || rows.length === 0) {
+        wrap.innerHTML = '<p class="empty-state">No data for this time window.</p>';
+        return;
+      }
+      const [header, ...data] = rows;
+      let html = '<table class="data-table"><thead><tr>';
+      header.forEach(h => { html += '<th>' + escapeHtml(h) + '</th>'; });
+      html += '</tr></thead><tbody>';
+      data.forEach(row => {
+        html += '<tr>';
+        row.forEach((cell, i) => {
+          const align = i === 0 ? 'left' : 'right';
+          const numClass = i > 0 ? ' num' : '';
+          html += '<td style="text-align:' + align + '" class="' + numClass + '">' + escapeHtml(cell) + '</td>';
+        });
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      wrap.innerHTML = html;
+    }
+    function escapeHtml(s) {
+      const div = document.createElement('div');
+      div.textContent = s;
+      return div.innerHTML;
+    }
+
+    document.getElementById('runBtn').addEventListener('click', async () => {
+      const runBtn = document.getElementById('runBtn');
+      const runBtnText = document.getElementById('runBtnText');
+      const timeWindow = document.getElementById('timeWindow').value;
+      const timezone = document.getElementById('timezone').value;
+      runBtn.disabled = true;
+      runBtnText.innerHTML = '<span class="spinner"></span> Running…';
+      hideMessage();
+
+      const body = { timezone };
+      if (timeWindow === '7d') body.last_days = 7;
+      else body.last_hours = 24;
+      const apiBase = (document.getElementById('serverUrl').value || '').trim().replace(/\/$/, '');
+      const reportUrl = apiBase ? (apiBase + '/api/report') : '/api/report';
+
+      try {
+        const res = await fetch(reportUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          showMessage(data.error || 'Report failed.', 'error');
+          return;
+        }
+        lastResponse = data;
+        document.getElementById('results').classList.add('visible');
+        const n = (data.table && data.table.length) ? data.table.length - 1 : 0;
+        document.getElementById('meta').innerHTML =
+          '<strong>' + n + ' active participants</strong> · ' + data.time_label + ' · Generated ' + data.run_timestamp;
+        renderTable(data.table || []);
+        const plotContainer = document.getElementById('plotContainer');
+        if (data.plot_base64) {
+          plotContainer.innerHTML = '';
+          plotContainer.classList.remove('empty-state');
+          const img = document.createElement('img');
+          img.src = 'data:image/png;base64,' + data.plot_base64;
+          img.alt = 'Report chart';
+          plotContainer.appendChild(img);
+        } else {
+          plotContainer.classList.add('empty-state');
+          plotContainer.innerHTML = 'Chart not available.';
+        }
+        showMessage('Report loaded successfully. You can download the table (CSV) or chart (PNG) above.', 'success');
+      } catch (e) {
+        let msg = e.message || 'Request failed';
+        if (msg === 'Failed to fetch' || msg.includes('fetch')) {
+          msg = 'Could not reach the report server. Check the Report server URL and ensure the server is running (e.g. http://server:5050).';
+        } else {
+          msg = 'Request failed: ' + msg;
+        }
+        showMessage(msg, 'error');
+      } finally {
+        runBtn.disabled = false;
+        runBtnText.textContent = 'Run report';
+      }
+    });
+
+    document.getElementById('downloadCsvBtn').addEventListener('click', () => {
+      if (!lastResponse || !lastResponse.table) return;
+      const csv = tableToCsv(lastResponse.table);
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+      downloadBlob(blob, lastResponse.csv_filename || 'report.csv');
+    });
+    document.getElementById('downloadPlotBtn').addEventListener('click', () => {
+      if (!lastResponse || !lastResponse.plot_base64) return;
+      const bin = atob(lastResponse.plot_base64);
+      const arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      const blob = new Blob([arr], { type: 'image/png' });
+      downloadBlob(blob, lastResponse.plot_filename || 'report.png');
+    });
+  </script>
+</body>
+</html>

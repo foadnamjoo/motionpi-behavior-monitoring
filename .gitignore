@@ -1,0 +1,32 @@
+# Environment and secrets
+.env
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Generated reports (optional: remove if you want to track them)
+daily_report_24h.png
+weekly_report_7d.png
+report_*.png
+report_*.csv
+
+# IDE and OS
+.idea/
+.vscode/
+.DS_Store
+*.swp
+*.swo
+
+# Jupyter
+.ipynb_checkpoints/

@@ -1,0 +1,12 @@
+[
+  { "name": "list_databases", "action": "list_databases" },
+  { "name": "list_collections", "db": "mydb", "action": "list_collections" },
+  {
+    "name": "sample_docs",
+    "db": "mydb",
+    "collection": "mycollection",
+    "action": "find",
+    "filter": {},
+    "limit": 5
+  }
+]
