@@ -12,8 +12,8 @@ MongoDB-backed report for active participants: table and charts by data source (
 
 1. **Clone and enter the repo**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/motionpi-report.git
-   cd motionpi-report
+   git clone https://github.com/foadnamjoo/motionpi-surveillance.git
+   cd motionpi-surveillance
    ```
 
 2. **Create a virtual environment and install dependencies**
@@ -25,7 +25,7 @@ MongoDB-backed report for active participants: table and charts by data source (
 
 3. **Configure MongoDB**
    - Copy `.env.example` to `.env`.
-   - Set `MONGODB_URI` to your connection string (same as in MongoDB Compass).
+   - Set `MONGODB_URI` to your connection string (from MongoDB Compass or your provider). **Do not commit `.env`.**
 
 ## Usage
 
@@ -38,20 +38,30 @@ python mongodb_query.py
 
 Uses the default weekly report (last 7 days, America/Denver). Edit `QUERIES` in `mongodb_query.py` to change.
 
-### Web report (for you or your supervisor)
+### Web report
 
 1. **Start the server** (on a machine that can reach MongoDB):
    ```bash
    source venv/bin/activate
    python report_server.py
    ```
-   Server runs at **http://127.0.0.1:5050** (or the host’s IP if accessed from another device).
+   By default the server binds to **127.0.0.1:5050** (local only). Open **http://127.0.0.1:5050/** in a browser.
 
-2. **Open the report**
-   - From the same machine: open **http://127.0.0.1:5050/** in a browser.
-   - From another computer: open the **report_app.html** file, enter the server URL (e.g. `http://server-ip:5050`), then run the report.
+2. **Optional deployment settings** (environment variables):
+   - `REPORT_HOST` — e.g. `0.0.0.0` to listen on all interfaces (only if needed and network is trusted).
+   - `REPORT_PORT` — default `5050`.
+   - `REPORT_DEBUG` — set to `1` or `true` only for local development; never in production.
+   - `CORS_ORIGIN` — if the HTML is opened from another origin (e.g. file or different domain), set to that origin or `*`. Leave unset for same-origin only (recommended when the page is served from this server).
+   - `REPORT_API_KEY` — if set, the API requires the `X-API-Key` header (or `api_key` query param) to match. Use in production to protect the report endpoint.
 
-No Python is required on the supervisor’s machine when using the standalone HTML + server URL.
+3. **Standalone HTML**: Open `report_app.html` elsewhere, enter the report server URL, and run the report. The server must have `CORS_ORIGIN` set (e.g. `*` or the page origin) for cross-origin requests to work; prefer also setting `REPORT_API_KEY`.
+
+## Security
+
+- **Never commit** `.env`, credentials, tokens, or private URLs. Use `.env.example` only as a template.
+- **Server defaults** are safe: `debug=False`, `host=127.0.0.1`. Override with env vars only when needed.
+- **CORS**: Disabled by default. Set `CORS_ORIGIN` only when you need cross-origin access (e.g. standalone HTML); use a specific origin instead of `*` when possible.
+- **API key**: Set `REPORT_API_KEY` in production and send it in the `X-API-Key` header (or `api_key` query) from the client if you expose the server beyond localhost.
 
 ## Project structure
 
@@ -65,7 +75,7 @@ No Python is required on the supervisor’s machine when using the standalone HT
 
 ## Time windows and collections
 
-- **Time window**: Last 24 hours or last 7 days (MST/SLC by default).
+- **Time window**: Last 24 hours or last 7 days (America/Denver by default).
 - **Collections**: `userlocations`, `userenmos`, `surveys`, `userlogs`, `userbatteries` (per-collection timestamp units: ms vs seconds as in `COLLECTION_TIMESTAMP_UNITS`).
 
 ## License

@@ -2,6 +2,9 @@
 """
 Web server for the active-participants report. Run: python report_server.py
 Open the HTML page, choose time window, click Run report; view table and plot, download CSV and PNG.
+
+Security: Uses safe defaults (no debug, bind 127.0.0.1). CORS and optional API key
+are configured via environment variables. See README.
 """
 
 import base64
@@ -29,13 +32,27 @@ from mongodb_query import (
 
 app = Flask(__name__)
 
+# Safe defaults: no debug, localhost only. Override with env for your deployment.
+DEBUG = os.environ.get("REPORT_DEBUG", "").lower() in ("1", "true", "yes")
+HOST = os.environ.get("REPORT_HOST", "127.0.0.1")
+PORT = int(os.environ.get("REPORT_PORT", "5050"))
+CORS_ORIGIN = os.environ.get("CORS_ORIGIN", "").strip()  # If set, allow this origin (e.g. * or https://app.example.com)
+REPORT_API_KEY = os.environ.get("REPORT_API_KEY", "").strip()  # If set, require X-API-Key header
+
+
+def _check_api_key():
+    if not REPORT_API_KEY:
+        return True
+    key = request.headers.get("X-API-Key") or request.args.get("api_key")
+    return key == REPORT_API_KEY
+
 
 @app.after_request
 def add_cors(resp):
-    """Allow standalone HTML (file:// or another origin) to call the API."""
-    resp.headers["Access-Control-Allow-Origin"] = "*"
-    resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-    resp.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    if CORS_ORIGIN:
+        resp.headers["Access-Control-Allow-Origin"] = CORS_ORIGIN
+        resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+        resp.headers["Access-Control-Allow-Headers"] = "Content-Type, X-API-Key"
     return resp
 
 
@@ -109,6 +126,8 @@ def report_options():
 
 @app.route("/api/report", methods=["POST"])
 def api_report():
+    if not _check_api_key():
+        return jsonify({"error": "Unauthorized"}), 401
     data = request.get_json() or {}
     last_days = data.get("last_days")
     last_hours = data.get("last_hours", 24)
@@ -123,11 +142,11 @@ def api_report():
         return jsonify({"error": str(e)}), 500
     collections = REPORT_COLLECTIONS
     rows = table_to_rows(participant_ids, table, collections)
-    # Filenames: report_2026-02-10_14-30_last7days_MST.csv / .png
     date_part = datetime.now().strftime("%Y-%m-%d")
     safe_label = time_label.replace(" ", "")
-    csv_filename = f"report_{date_part}_{run_ts}_{safe_label}_{tz.split('/')[-1]}.csv"
-    plot_filename = f"report_{date_part}_{run_ts}_{safe_label}_{tz.split('/')[-1]}.png"
+    tz_suffix = tz.split("/")[-1] if "/" in tz else tz
+    csv_filename = f"report_{date_part}_{run_ts}_{safe_label}_{tz_suffix}.csv"
+    plot_filename = f"report_{date_part}_{run_ts}_{safe_label}_{tz_suffix}.png"
     plot_bytes, _ = _plot_daily_report_to_bytes(
         participant_ids, collections, table,
         col_labels=REPORT_COL_LABELS,
@@ -147,4 +166,4 @@ def api_report():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5050, debug=True)
+    app.run(host=HOST, port=PORT, debug=DEBUG)

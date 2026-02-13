@@ -1,10 +1,20 @@
-# Environment and secrets
+# Secrets and credentials — never commit
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa
+id_ed25519
+*credentials*
+*token*
+*.secret
+ssh_config
+
+# Python
 venv/
 .venv/
 env/
-
-# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -15,7 +25,7 @@ __pycache__/
 dist/
 build/
 
-# Generated reports (optional: remove if you want to track them)
+# Generated reports
 daily_report_24h.png
 weekly_report_7d.png
 report_*.png
@@ -27,6 +37,4 @@ report_*.csv
 .DS_Store
 *.swp
 *.swo
-
-# Jupyter
 .ipynb_checkpoints/

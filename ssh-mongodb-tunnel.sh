@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Forward local 27017 to MongoDB on YOUR_DB_HOST.
-# Run this in a separate terminal first; SSH will prompt for your CHPC password.
-# Keep this terminal open, then in another terminal run: python mongodb_query.py
-echo "Connecting to YOUR_DB_HOST (you will be asked for your CHPC password)..."
-ssh -N -L 27017:127.0.0.1:27017 YOUR_UNID@YOUR_DB_HOST
+# Example: forward local 27017 to a remote MongoDB. Customize for your environment.
+# Set SSH_TUNNEL_HOST and SSH_TUNNEL_USER in your environment (or edit below for local use only).
+# Run in a separate terminal; SSH will prompt for password. Keep it open while querying.
+: "${SSH_TUNNEL_HOST:=your-mongo-host.example.com}"
+: "${SSH_TUNNEL_USER:=your-username}"
+echo "Connecting to $SSH_TUNNEL_HOST (you will be asked for your password)..."
+ssh -N -L 27017:127.0.0.1:27017 "${SSH_TUNNEL_USER}@${SSH_TUNNEL_HOST}"

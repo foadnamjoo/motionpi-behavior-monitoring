@@ -169,6 +169,10 @@
           <span class="hint">Leave blank when using the page from the server</span>
         </div>
         <div class="field">
+          <label for="apiKey">API key (optional)</label>
+          <input type="password" id="apiKey" placeholder="Required if server uses REPORT_API_KEY" autocomplete="off" />
+        </div>
+        <div class="field">
           <label for="timeWindow">Time window</label>
           <select id="timeWindow">
             <option value="24">Last 24 hours</option>
@@ -288,16 +292,20 @@
       else body.last_hours = 24;
       const apiBase = (document.getElementById('serverUrl').value || '').trim().replace(/\/$/, '');
       const reportUrl = apiBase ? (apiBase + '/api/report') : '/api/report';
+      const apiKey = (document.getElementById('apiKey').value || '').trim();
+      const headers = { 'Content-Type': 'application/json' };
+      if (apiKey) headers['X-API-Key'] = apiKey;
 
       try {
         const res = await fetch(reportUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: headers,
           body: JSON.stringify(body),
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
-          showMessage(data.error || 'Report failed.', 'error');
+          if (res.status === 401) showMessage(data.error || 'Invalid or missing API key.', 'error');
+          else showMessage(data.error || 'Report failed.', 'error');
           return;
         }
         lastResponse = data;
