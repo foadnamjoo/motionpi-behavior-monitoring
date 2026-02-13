@@ -78,28 +78,33 @@ def _get_filter_for_collection(q, collection_name):
 
 
 def _apply_time_filter(q):
-    """Filter: timestamp in [now - last_hours, now]. Returns (filter, since_sec_for_debug or None).
-    Use 'timestamp_unit': 'seconds' or 'milliseconds'. Use 'timezone' (e.g. 'America/Denver' for MST/SLC)."""
+    """Filter: timestamp in [since, end]. Use last_hours/last_days OR start_ts/end_ts (Unix seconds).
+    Use 'timestamp_unit': 'seconds' or 'milliseconds'. Use 'timezone' for last_* (e.g. America/Denver)."""
     filter_ = dict(q.get("filter", {}))
-    last_hours = q.get("last_hours")
-    last_days = q.get("last_days")
-    if last_hours is not None:
-        hours = last_hours
-    elif last_days is not None:
-        hours = last_days * 24
+    start_ts = q.get("start_ts")
+    end_ts = q.get("end_ts")
+    if start_ts is not None and end_ts is not None:
+        since_sec = float(start_ts)
+        now_sec = float(end_ts)
     else:
-        return filter_, None
-
-    tz_name = q.get("timezone")
-    if tz_name:
-        tz = ZoneInfo(tz_name)
-        now_local = datetime.now(tz)
-        since_local = now_local - timedelta(hours=hours)
-        since_sec = since_local.timestamp()
-        now_sec = now_local.timestamp()
-    else:
-        now_sec = time.time()
-        since_sec = now_sec - (hours * 3600)
+        last_hours = q.get("last_hours")
+        last_days = q.get("last_days")
+        if last_hours is not None:
+            hours = last_hours
+        elif last_days is not None:
+            hours = last_days * 24
+        else:
+            return filter_, None
+        tz_name = q.get("timezone")
+        if tz_name:
+            tz = ZoneInfo(tz_name)
+            now_local = datetime.now(tz)
+            since_local = now_local - timedelta(hours=hours)
+            since_sec = since_local.timestamp()
+            now_sec = now_local.timestamp()
+        else:
+            now_sec = time.time()
+            since_sec = now_sec - (hours * 3600)
 
     unit = q.get("timestamp_unit", "milliseconds")
     if unit == "milliseconds":

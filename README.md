@@ -75,7 +75,7 @@ Uses the default weekly report (last 7 days, America/Denver). Edit `QUERIES` in 
 
 ## Time windows and collections
 
-- **Time window**: Last 24 hours or last 7 days (America/Denver by default).
+- **Time window**: Last 24 hours or last 7 days (MST/SLC by default).
 - **Collections**: `userlocations`, `userenmos`, `surveys`, `userlogs`, `userbatteries` (per-collection timestamp units: ms vs seconds as in `COLLECTION_TIMESTAMP_UNITS`).
 
 ## License

@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <style>
     :root {
       --bg: #f8fafc;
@@ -39,14 +40,13 @@
 
     .header {
       background: var(--surface);
-      padding: 1.75rem 2rem;
+      padding: 1.5rem 2rem;
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       margin-bottom: 1.5rem;
       border-left: 4px solid var(--primary);
     }
-    .header h1 { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 0.35rem; }
-    .header p { font-size: 0.95rem; color: var(--text-muted); }
+    .header h1 { font-size: 1.375rem; font-weight: 600; color: var(--text); letter-spacing: -0.02em; }
 
     .card {
       background: var(--surface);
@@ -55,7 +55,11 @@
       padding: 1.5rem 2rem;
       margin-bottom: 1.5rem;
     }
-    .card-title { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
+    .card-title { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem; }
+    .settings-block { margin-bottom: 1.5rem; }
+    .settings-block:last-of-type { margin-bottom: 0; }
+    .settings-row { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
+    .field.compact .hint { display: none; }
 
     .notice {
       background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
@@ -75,11 +79,11 @@
       align-items: end;
     }
     @media (max-width: 700px) { .form-grid { grid-template-columns: 1fr; } }
-    .field label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem; }
+    .field label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.35rem; letter-spacing: 0.02em; }
     .field input, .field select {
       width: 100%;
-      padding: 0.6rem 0.85rem;
-      font-size: 0.95rem;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
       font-family: inherit;
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
@@ -92,10 +96,18 @@
       box-shadow: 0 0 0 3px var(--primary-light);
     }
     .field .hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
+    .collections-row { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; align-items: center; }
+    .collections-row label { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; font-weight: 500; color: var(--text); cursor: pointer; }
+    .collections-row input[type="checkbox"] { width: 1rem; height: 1rem; accent-color: var(--primary); cursor: pointer; }
+    .custom-time-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.75rem; }
+    .custom-time-row .field input { font-family: inherit; }
+    #customTimeWrap { display: none; margin-top: 0.5rem; }
+    #customTimeWrap.visible { display: block; }
+    .flatpickr-input { background: var(--surface) !important; color: var(--text) !important; }
 
     .btn {
-      padding: 0.65rem 1.5rem;
-      font-size: 0.95rem;
+      padding: 0.5rem 1.25rem;
+      font-size: 0.875rem;
       font-weight: 600;
       font-family: inherit;
       border: none;
@@ -137,7 +149,7 @@
     .data-table .num { font-variant-numeric: tabular-nums; }
 
     .plot-section { margin-top: 2rem; }
-    .plot-section h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text); }
+    .plot-section h3 { font-size: 0.875rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text); letter-spacing: 0.02em; }
     #plotContainer { border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); background: var(--surface); padding: 0.5rem; }
     #plotContainer img { max-width: 100%; height: auto; display: block; }
 
@@ -145,52 +157,77 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.95rem; }
 
-    .footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-muted); }
+    .footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.75rem; color: var(--text-muted); }
+    .server-url-wrap { max-width: 280px; }
   </style>
 </head>
 <body>
   <div class="app">
     <header class="header">
       <h1>Active Participants Report</h1>
-      <p>View participant activity by data source (location, ENMO, surveys, logs, batteries). Choose a time window, run the report, then download the table or chart.</p>
     </header>
 
-    <div class="notice">
-      <strong>How to use</strong>
-      Enter the <strong>Report server URL</strong> if this page was opened from a file or another website (e.g. <code>http://server:5050</code>). Leave it blank if you opened this page from the report server itself.
-    </div>
-
     <section class="card">
-      <h2 class="card-title">Step 1 — Configure</h2>
-      <div class="form-grid">
-        <div class="field">
-          <label for="serverUrl">Report server URL</label>
-          <input type="text" id="serverUrl" placeholder="http://your-server:5050" />
-          <span class="hint">Leave blank when using the page from the server</span>
+      <h2 class="card-title">Settings</h2>
+
+      <div class="settings-block">
+        <div class="card-title">Connection</div>
+        <div class="settings-row">
+          <div class="field server-url-wrap">
+            <label for="serverUrl">Server URL</label>
+            <input type="text" id="serverUrl" placeholder="http://127.0.0.1:5050" />
+            <span class="hint" id="serverUrlHint">Leave blank if opened from the server.</span>
+          </div>
         </div>
-        <div class="field">
-          <label for="apiKey">API key (optional)</label>
-          <input type="password" id="apiKey" placeholder="Required if server uses REPORT_API_KEY" autocomplete="off" />
+      </div>
+
+      <div class="settings-block">
+        <div class="card-title">Data sources</div>
+        <div class="collections-row">
+          <label><input type="checkbox" name="collection" value="userlocations" checked> Locations</label>
+          <label><input type="checkbox" name="collection" value="userenmos" checked> ENMO</label>
+          <label><input type="checkbox" name="collection" value="surveys" checked> Surveys</label>
+          <label><input type="checkbox" name="collection" value="userlogs" checked> Logs</label>
+          <label><input type="checkbox" name="collection" value="userbatteries" checked> Batteries</label>
         </div>
-        <div class="field">
-          <label for="timeWindow">Time window</label>
-          <select id="timeWindow">
-            <option value="24">Last 24 hours</option>
-            <option value="7d">Last 7 days</option>
-          </select>
+      </div>
+
+      <div class="settings-block">
+        <div class="card-title">Time range</div>
+        <div class="settings-row">
+          <div class="field" style="max-width: 220px;">
+            <label for="timeWindow">Range</label>
+            <select id="timeWindow">
+              <option value="24">Last 24 hours</option>
+              <option value="7d">Last 7 days</option>
+              <option value="30d">Last 30 days</option>
+              <option value="custom">Custom range</option>
+            </select>
+          </div>
+          <div class="field" style="max-width: 160px;">
+            <label for="timezone">Timezone</label>
+            <select id="timezone">
+              <option value="America/Denver">America/Denver</option>
+              <option value="UTC">UTC</option>
+            </select>
+          </div>
         </div>
-        <div class="field">
-          <label for="timezone">Timezone</label>
-          <select id="timezone">
-            <option value="America/Denver">America/Denver (MST/SLC)</option>
-            <option value="UTC">UTC</option>
-          </select>
+        <div id="customTimeWrap" class="custom-time-row">
+          <div class="field">
+            <label for="startTime">From</label>
+            <input type="text" id="startTime" placeholder="Date & time" readonly />
+          </div>
+          <div class="field">
+            <label for="endTime">To</label>
+            <input type="text" id="endTime" placeholder="Date & time" readonly />
+          </div>
         </div>
-        <div class="field">
-          <button type="button" id="runBtn" class="btn btn-primary">
-            <span id="runBtnText">Run report</span>
-          </button>
-        </div>
+      </div>
+
+      <div class="settings-block" style="margin-top: 1.25rem;">
+        <button type="button" id="runBtn" class="btn btn-primary">
+          <span id="runBtnText">Run report</span>
+        </button>
       </div>
     </section>
 
@@ -198,29 +235,70 @@
 
     <section id="results" class="results-section">
       <div class="card">
-        <h2 class="card-title">Step 2 — Results</h2>
+        <h2 class="card-title">Results</h2>
         <div class="results-header">
           <p class="results-meta" id="meta"></p>
           <div class="downloads">
             <button type="button" id="downloadCsvBtn" class="btn btn-secondary">Download CSV</button>
-            <button type="button" id="downloadPlotBtn" class="btn btn-secondary">Download chart (PNG)</button>
+            <button type="button" id="downloadPlotBtn" class="btn btn-secondary">Download chart</button>
           </div>
         </div>
         <div class="table-wrap" id="tableWrapper"></div>
       </div>
       <div class="card plot-section">
-        <h3>Chart — Record counts per participant (each panel has its own scale)</h3>
-        <div id="plotContainer" class="empty-state">Run the report to see the chart.</div>
+        <h3>Summary chart</h3>
+        <div id="plotContainer" class="empty-state">Run the report to view the chart.</div>
       </div>
     </section>
 
     <footer class="footer">
-      Active Participants Report · MotionPI · Filenames include report date and time window for easy archiving.
+      MotionPI
     </footer>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script>
     let lastResponse = null;
+    const REPORT_COLLECTIONS = ['userlocations', 'userenmos', 'surveys', 'userlogs', 'userbatteries'];
+    const DEFAULT_SERVER_URL = 'http://127.0.0.1:5050';
+
+    (function initServerUrl() {
+      const isFile = window.location.protocol === 'file:';
+      const input = document.getElementById('serverUrl');
+      const hint = document.getElementById('serverUrlHint');
+      if (isFile && !input.value.trim()) {
+        input.value = DEFAULT_SERVER_URL;
+        hint.textContent = 'Using ' + DEFAULT_SERVER_URL + '. Start server: python report_server.py';
+      }
+    })();
+
+    (function initFlatpickr() {
+      const startEl = document.getElementById('startTime');
+      const endEl = document.getElementById('endTime');
+      const opts = {
+        enableTime: true,
+        time_24hr: true,
+        dateFormat: 'Y-m-d H:i',
+        allowInput: false,
+      };
+      window.fpStart = flatpickr(startEl, Object.assign({}, opts, {
+        onChange: function(sel, dateStr) {
+          if (window.fpEnd) window.fpEnd.set('minDate', dateStr);
+        },
+      }));
+      window.fpEnd = flatpickr(endEl, Object.assign({}, opts, {
+        onChange: function(sel, dateStr) {
+          if (window.fpStart) window.fpStart.set('maxDate', dateStr);
+        },
+      }));
+    })();
+
+    function toggleCustomTime() {
+      const wrap = document.getElementById('customTimeWrap');
+      wrap.classList.toggle('visible', document.getElementById('timeWindow').value === 'custom');
+    }
+    document.getElementById('timeWindow').addEventListener('change', toggleCustomTime);
+    toggleCustomTime();
 
     function showMessage(text, type) {
       const el = document.getElementById('message');
@@ -252,8 +330,8 @@
 
     function renderTable(rows) {
       const wrap = document.getElementById('tableWrapper');
-      if (!rows || rows.length === 0) {
-        wrap.innerHTML = '<p class="empty-state">No data for this time window.</p>';
+        if (!rows || rows.length === 0) {
+        wrap.innerHTML = '<p class="empty-state">No data for the selected range.</p>';
         return;
       }
       const [header, ...data] = rows;
@@ -287,14 +365,29 @@
       runBtnText.innerHTML = '<span class="spinner"></span> Running…';
       hideMessage();
 
-      const body = { timezone };
-      if (timeWindow === '7d') body.last_days = 7;
-      else body.last_hours = 24;
+      const selected = Array.from(document.querySelectorAll('input[name="collection"]:checked')).map(c => c.value);
+      const body = { timezone, collections: selected.length ? selected : REPORT_COLLECTIONS };
+      if (timeWindow === 'custom') {
+        const startStr = document.getElementById('startTime').value;
+        const endStr = document.getElementById('endTime').value;
+        if (!startStr || !endStr) {
+          showMessage('Select both start and end time for the custom range.', 'error');
+          runBtn.disabled = false;
+          runBtnText.textContent = 'Run report';
+          return;
+        }
+        body.start_time = startStr.replace(' ', 'T') + ':00';
+        body.end_time = endStr.replace(' ', 'T') + ':00';
+      } else if (timeWindow === '30d') {
+        body.last_days = 30;
+      } else if (timeWindow === '7d') {
+        body.last_days = 7;
+      } else {
+        body.last_hours = 24;
+      }
       const apiBase = (document.getElementById('serverUrl').value || '').trim().replace(/\/$/, '');
       const reportUrl = apiBase ? (apiBase + '/api/report') : '/api/report';
-      const apiKey = (document.getElementById('apiKey').value || '').trim();
       const headers = { 'Content-Type': 'application/json' };
-      if (apiKey) headers['X-API-Key'] = apiKey;
 
       try {
         const res = await fetch(reportUrl, {
@@ -304,8 +397,7 @@
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
-          if (res.status === 401) showMessage(data.error || 'Invalid or missing API key.', 'error');
-          else showMessage(data.error || 'Report failed.', 'error');
+          showMessage(data.error || 'Report failed.', 'error');
           return;
         }
         lastResponse = data;
@@ -326,11 +418,12 @@
           plotContainer.classList.add('empty-state');
           plotContainer.innerHTML = 'Chart not available.';
         }
-        showMessage('Report loaded successfully. You can download the table (CSV) or chart (PNG) above.', 'success');
+        showMessage('Report ready. Download CSV or chart above.', 'success');
       } catch (e) {
         let msg = e.message || 'Request failed';
         if (msg === 'Failed to fetch' || msg.includes('fetch')) {
-          msg = 'Could not reach the report server. Check the Report server URL and ensure the server is running (e.g. http://server:5050).';
+          const base = (document.getElementById('serverUrl').value || '').trim() || DEFAULT_SERVER_URL;
+          msg = 'Could not reach the report server. Make sure the server is running (python report_server.py), then open this app at http://127.0.0.1:5050/ or enter that URL above if you opened this page as a file.';
         } else {
           msg = 'Request failed: ' + msg;
         }
