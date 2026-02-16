@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+config.env
 *.pem
 *.key
 id_rsa
@@ -24,6 +25,9 @@ __pycache__/
 .eggs/
 dist/
 build/
+
+# Build artifacts
+MotionPI_Report_Mac.zip
 
 # Generated reports
 daily_report_24h.png

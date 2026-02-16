@@ -3,186 +3,353 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Active Participants Report | MotionPI</title>
+  <title>MotionPI Surveillance — Activity Report</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <style>
     :root {
-      --bg: #f8fafc;
+      --bg: #f9fafb;
       --surface: #ffffff;
-      --border: #e2e8f0;
-      --text: #1e293b;
-      --text-muted: #64748b;
-      --primary: #0f766e;
-      --primary-hover: #0d9488;
-      --primary-light: #ccfbf1;
-      --accent: #0369a1;
+      --border: #e5e7eb;
+      --text: #111827;
+      --text-secondary: #374151;
+      --text-muted: #6b7280;
+      --primary: #1557b0;
+      --primary-hover: #124a96;
+      --focus-ring: rgba(21, 87, 176, 0.2);
       --error-bg: #fef2f2;
-      --error-text: #b91c1c;
+      --error-text: #991b1b;
       --success-bg: #f0fdf4;
-      --success-text: #15803d;
-      --shadow: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.06);
-      --radius: 10px;
-      --radius-sm: 6px;
+      --success-text: #166534;
+      --radius: 6px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
+      font-size: 15px;
+      line-height: 1.5;
       min-height: 100vh;
     }
-    .app { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .app { max-width: 900px; margin: 0 auto; padding: 0 24px 48px; }
 
     .header {
       background: var(--surface);
-      padding: 1.5rem 2rem;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      margin-bottom: 1.5rem;
-      border-left: 4px solid var(--primary);
+      padding: 24px 0;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--border);
     }
-    .header h1 { font-size: 1.375rem; font-weight: 600; color: var(--text); letter-spacing: -0.02em; }
+    .header h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .header .credit {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .header .credit a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+    .header .credit a:hover { color: var(--primary); text-decoration: underline; }
 
     .card {
       background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 1.5rem 2rem;
-      margin-bottom: 1.5rem;
+      padding: 24px;
+      margin-bottom: 24px;
     }
-    .card-title { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem; }
-    .settings-block { margin-bottom: 1.5rem; }
-    .settings-block:last-of-type { margin-bottom: 0; }
-    .settings-row { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
-    .field.compact .hint { display: none; }
-
-    .notice {
-      background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
-      border: 1px solid #facc15;
-      color: #854d0e;
-      padding: 1rem 1.25rem;
-      border-radius: var(--radius-sm);
-      margin-bottom: 1.5rem;
-      font-size: 0.9rem;
+    .card h2 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
     }
-    .notice strong { display: block; margin-bottom: 0.25rem; color: #713f12; }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr auto auto auto;
-      gap: 1.25rem;
-      align-items: end;
+    .settings-block { margin-bottom: 24px; }
+    .settings-block:last-child { margin-bottom: 0; }
+    .section-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+      display: block;
     }
-    @media (max-width: 700px) { .form-grid { grid-template-columns: 1fr; } }
-    .field label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.35rem; letter-spacing: 0.02em; }
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
     .field input, .field select {
       width: 100%;
-      padding: 0.5rem 0.75rem;
-      font-size: 0.875rem;
+      max-width: 280px;
+      padding: 10px 12px;
+      font-size: 14px;
       font-family: inherit;
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius);
       background: var(--surface);
       color: var(--text);
     }
     .field input:focus, .field select:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px var(--primary-light);
+      box-shadow: 0 0 0 3px var(--focus-ring);
     }
-    .field .hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
-    .collections-row { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; align-items: center; }
-    .collections-row label { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; font-weight: 500; color: var(--text); cursor: pointer; }
-    .collections-row input[type="checkbox"] { width: 1rem; height: 1rem; accent-color: var(--primary); cursor: pointer; }
-    .custom-time-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.75rem; }
-    .custom-time-row .field input { font-family: inherit; }
-    #customTimeWrap { display: none; margin-top: 0.5rem; }
-    #customTimeWrap.visible { display: block; }
-    .flatpickr-input { background: var(--surface) !important; color: var(--text) !important; }
+    .field select:disabled {
+      background: #f3f4f6;
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+    .time-mode {
+      display: flex;
+      gap: 0;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: fit-content;
+      overflow: hidden;
+    }
+    .time-mode label {
+      display: flex;
+      align-items: center;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--surface);
+      cursor: pointer;
+      margin: 0;
+      border-right: 1px solid var(--border);
+      transition: background 0.15s, color 0.15s;
+    }
+    .time-mode label:last-child { border-right: none; }
+    .time-mode label:hover { background: #f9fafb; }
+    .time-mode input { display: none; }
+    .time-mode input:checked + label {
+      background: var(--primary);
+      color: #fff;
+      cursor: default;
+    }
+    .time-mode input:not(:checked) + label:hover { color: var(--text); }
+    .time-panel { display: none; }
+    .time-panel.visible { display: block; }
+    .collections-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 24px;
+      align-items: center;
+    }
+    .collections-row label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    .collections-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--primary);
+    }
+    .time-divider {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 20px 0 12px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .custom-time-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      max-width: 400px;
+    }
 
     .btn {
-      padding: 0.5rem 1.25rem;
-      font-size: 0.875rem;
+      padding: 10px 20px;
+      font-size: 14px;
       font-weight: 600;
       font-family: inherit;
       border: none;
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius);
       cursor: pointer;
-      transition: background 0.2s, transform 0.05s;
+      transition: background 0.15s;
     }
-    .btn:active { transform: scale(0.98); }
-    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
     .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
-    .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
-    .btn-secondary { background: #f1f5f9; color: var(--text); }
-    .btn-secondary:hover { background: #e2e8f0; }
-    .btn svg { vertical-align: middle; margin-right: 0.4rem; }
+    .btn-primary:disabled { background: #9ca3af; cursor: not-allowed; }
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--text-muted); color: var(--text); }
 
-    .message { padding: 1rem 1.25rem; border-radius: var(--radius-sm); margin-bottom: 1rem; font-size: 0.9rem; display: none; }
+    .message {
+      padding: 14px 16px;
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+      font-size: 14px;
+      display: none;
+    }
     .message.error { background: var(--error-bg); color: var(--error-text); display: block; }
     .message.success { background: var(--success-bg); color: var(--success-text); display: block; }
 
     .results-section { display: none; }
     .results-section.visible { display: block; }
-    .results-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
-    .results-meta { font-size: 0.9rem; color: var(--text-muted); }
+    .results-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .results-meta { font-size: 14px; color: var(--text-muted); }
     .results-meta strong { color: var(--text); }
-    .downloads { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-    .downloads .btn { font-size: 0.875rem; padding: 0.5rem 1rem; }
+    .downloads { display: flex; gap: 8px; flex-wrap: wrap; }
 
-    .table-wrap { overflow-x: auto; border-radius: var(--radius-sm); border: 1px solid var(--border); margin: 1rem 0; }
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      margin: 16px 0;
+    }
     .data-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.875rem;
+      font-size: 14px;
     }
-    .data-table th, .data-table td { padding: 0.65rem 1rem; text-align: right; border-bottom: 1px solid var(--border); }
-    .data-table th { background: #f8fafc; font-weight: 600; color: var(--text); }
-    .data-table th:first-child, .data-table td:first-child { text-align: left; position: sticky; left: 0; background: var(--surface); }
-    .data-table tr:last-child td { border-bottom: none; }
-    .data-table tbody tr:hover { background: #f8fafc; }
+    .data-table th, .data-table td {
+      padding: 12px 16px;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table th {
+      background: #f9fafb;
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+    .data-table th:first-child, .data-table td:first-child {
+      text-align: left;
+      position: sticky;
+      left: 0;
+      background: var(--surface);
+      z-index: 1;
+    }
+    .data-table th:first-child { background: #f9fafb; }
+    .data-table tbody tr:hover { background: #f9fafb; }
     .data-table .num { font-variant-numeric: tabular-nums; }
+    .data-table tr:last-child td { border-bottom: none; }
 
-    .plot-section { margin-top: 2rem; }
-    .plot-section h3 { font-size: 0.875rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text); letter-spacing: 0.02em; }
-    #plotContainer { border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); background: var(--surface); padding: 0.5rem; }
+    .plot-section { margin-top: 24px; }
+    .plot-section h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+    #plotContainer {
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: #fafafa;
+      padding: 16px;
+    }
     #plotContainer img { max-width: 100%; height: auto; display: block; }
 
-    .spinner { display: inline-block; width: 1.1em; height: 1.1em; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 0.5rem; }
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    .spinner-large {
+      width: 40px;
+      height: 40px;
+      border-width: 3px;
+      border-color: var(--border);
+      border-top-color: var(--primary);
+      margin: 0 auto 20px;
+      display: block;
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.95rem; }
 
-    .footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.75rem; color: var(--text-muted); }
-    .server-url-wrap { max-width: 280px; }
+    .loading-note {
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .loading-note.visible { display: block; }
+    .loading-note .loading-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .loading-note .loading-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; max-width: 480px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+    .wait-graphic {
+      margin: 0 auto;
+      width: 180px;
+      color: var(--primary);
+    }
+    .wait-graphic svg { display: block; width: 100%; height: auto; }
+    .wait-graphic .blob { animation: blob-bounce 1.4s ease-in-out infinite; transform-origin: center; }
+    .wait-graphic .blob:nth-child(1) { animation-delay: 0s; }
+    .wait-graphic .blob:nth-child(2) { animation-delay: 0.2s; }
+    .wait-graphic .blob:nth-child(3) { animation-delay: 0.4s; }
+    .wait-graphic .blob:nth-child(4) { animation-delay: 0.1s; }
+    .wait-graphic .blob:nth-child(5) { animation-delay: 0.3s; }
+    .wait-graphic .blob:nth-child(6) { animation-delay: 0.5s; }
+    .wait-graphic .face-smile { animation: face-wiggle 2s ease-in-out infinite; transform-origin: center bottom; }
+    .wait-graphic .sparkle { animation: sparkle-pop 1.8s ease-in-out infinite; opacity: 0.8; }
+    .wait-graphic .sparkle:nth-of-type(1) { animation-delay: 0s; }
+    .wait-graphic .sparkle:nth-of-type(2) { animation-delay: 0.6s; }
+    .wait-graphic .sparkle:nth-of-type(3) { animation-delay: 1.2s; }
+    @keyframes blob-bounce { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-10px) scale(1.05); } }
+    @keyframes face-wiggle { 0%, 90%, 100% { transform: rotate(0deg); } 92% { transform: rotate(-4deg); } 96% { transform: rotate(4deg); } }
+    @keyframes sparkle-pop { 0%, 100% { transform: scale(0.8); opacity: 0.4; } 50% { transform: scale(1.2); opacity: 1; } }
+    .empty-state {
+      text-align: center;
+      padding: 40px 24px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .footer:empty { display: none; }
   </style>
 </head>
 <body>
   <div class="app">
     <header class="header">
-      <h1>Active Participants Report</h1>
+      <h1>MotionPI Surveillance · Participant activity monitoring</h1>
+      <p class="credit">Developed by <a href="https://users.cs.utah.edu/~foad27/" target="_blank" rel="noopener">Foad Namjoo</a>, Kahlert School of Computing, University of Utah</p>
     </header>
 
     <section class="card">
-      <h2 class="card-title">Settings</h2>
+      <h2>Report parameters</h2>
 
       <div class="settings-block">
-        <div class="card-title">Connection</div>
-        <div class="settings-row">
-          <div class="field server-url-wrap">
-            <label for="serverUrl">Server URL</label>
-            <input type="text" id="serverUrl" placeholder="http://127.0.0.1:5050" />
-            <span class="hint" id="serverUrlHint">Leave blank if opened from the server.</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="settings-block">
-        <div class="card-title">Data sources</div>
+        <span class="section-label">Data sources</span>
         <div class="collections-row">
           <label><input type="checkbox" name="collection" value="userlocations" checked> Locations</label>
           <label><input type="checkbox" name="collection" value="userenmos" checked> ENMO</label>
@@ -193,38 +360,41 @@
       </div>
 
       <div class="settings-block">
-        <div class="card-title">Time range</div>
-        <div class="settings-row">
-          <div class="field" style="max-width: 220px;">
-            <label for="timeWindow">Range</label>
+        <span class="section-label">Time range</span>
+        <div class="time-mode" role="group" aria-label="Time range type">
+          <input type="radio" name="timeMode" id="timeModePreset" value="preset" checked>
+          <label for="timeModePreset">Preset</label>
+          <input type="radio" name="timeMode" id="timeModeCustom" value="custom">
+          <label for="timeModeCustom">Custom range</label>
+        </div>
+        <div id="presetPanel" class="time-panel visible">
+          <div class="field">
+            <label for="timeWindow">Preset</label>
             <select id="timeWindow">
               <option value="24">Last 24 hours</option>
               <option value="7d">Last 7 days</option>
               <option value="30d">Last 30 days</option>
-              <option value="custom">Custom range</option>
-            </select>
-          </div>
-          <div class="field" style="max-width: 160px;">
-            <label for="timezone">Timezone</label>
-            <select id="timezone">
-              <option value="America/Denver">America/Denver</option>
-              <option value="UTC">UTC</option>
+              <option value="90d">Last 3 months</option>
+              <option value="180d">Last 6 months</option>
+              <option value="365d">Last year</option>
             </select>
           </div>
         </div>
-        <div id="customTimeWrap" class="custom-time-row">
-          <div class="field">
-            <label for="startTime">From</label>
-            <input type="text" id="startTime" placeholder="Date & time" readonly />
-          </div>
-          <div class="field">
-            <label for="endTime">To</label>
-            <input type="text" id="endTime" placeholder="Date & time" readonly />
+        <div id="customPanel" class="time-panel">
+          <div class="custom-time-row">
+            <div class="field">
+              <label for="startTime">Start</label>
+              <input type="text" id="startTime" placeholder="Select date and time" readonly />
+            </div>
+            <div class="field">
+              <label for="endTime">End</label>
+              <input type="text" id="endTime" placeholder="Select date and time" readonly />
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="settings-block" style="margin-top: 1.25rem;">
+      <div class="settings-block" style="margin-top: 24px;">
         <button type="button" id="runBtn" class="btn btn-primary">
           <span id="runBtnText">Run report</span>
         </button>
@@ -233,9 +403,34 @@
 
     <div id="message" class="message"></div>
 
+    <div id="loadingNote" class="loading-note">
+      <span class="spinner spinner-large"></span>
+      <p class="loading-title">Generating your report…</p>
+      <p class="loading-desc">We’re querying MongoDB and aggregating results for your chosen collections and date range. More collections and longer ranges mean more data to scan — so runtimes can be anywhere from a few seconds to 15 minutes. That’s expected; no need to worry.</p>
+      <div class="wait-graphic" aria-hidden="true">
+        <svg viewBox="0 0 180 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="50" y="22" width="80" height="56" rx="8" stroke="currentColor" stroke-width="1.8" fill="none" opacity="0.5"/>
+          <g class="face-smile">
+            <circle cx="78" cy="42" r="4" fill="currentColor" opacity="0.8"/>
+            <circle cx="102" cy="42" r="4" fill="currentColor" opacity="0.8"/>
+            <path d="M74 54 Q90 64 106 54" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.8"/>
+          </g>
+          <circle class="blob" cx="32" cy="72" r="10" fill="currentColor" opacity="0.7"/>
+          <circle class="blob" cx="52" cy="78" r="8" fill="currentColor" opacity="0.6"/>
+          <circle class="blob" cx="72" cy="74" r="9" fill="currentColor" opacity="0.65"/>
+          <circle class="blob" cx="108" cy="76" r="8" fill="currentColor" opacity="0.6"/>
+          <circle class="blob" cx="128" cy="72" r="10" fill="currentColor" opacity="0.7"/>
+          <circle class="blob" cx="148" cy="78" r="7" fill="currentColor" opacity="0.55"/>
+          <path class="sparkle" d="M38 28 L40 32 L44 34 L40 36 L38 40 L36 36 L32 34 L36 32 Z" fill="currentColor"/>
+          <path class="sparkle" d="M90 14 L92 18 L96 20 L92 22 L90 26 L88 22 L84 20 L88 18 Z" fill="currentColor"/>
+          <path class="sparkle" d="M142 30 L144 34 L148 36 L144 38 L142 42 L140 38 L136 36 L140 34 Z" fill="currentColor"/>
+        </svg>
+      </div>
+    </div>
+
     <section id="results" class="results-section">
       <div class="card">
-        <h2 class="card-title">Results</h2>
+        <h2>Results</h2>
         <div class="results-header">
           <p class="results-meta" id="meta"></p>
           <div class="downloads">
@@ -246,14 +441,12 @@
         <div class="table-wrap" id="tableWrapper"></div>
       </div>
       <div class="card plot-section">
-        <h3>Summary chart</h3>
+        <h3>Activity summary</h3>
         <div id="plotContainer" class="empty-state">Run the report to view the chart.</div>
       </div>
     </section>
 
-    <footer class="footer">
-      MotionPI
-    </footer>
+    <footer class="footer"></footer>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -262,15 +455,19 @@
     const REPORT_COLLECTIONS = ['userlocations', 'userenmos', 'surveys', 'userlogs', 'userbatteries'];
     const DEFAULT_SERVER_URL = 'http://127.0.0.1:5050';
 
-    (function initServerUrl() {
-      const isFile = window.location.protocol === 'file:';
-      const input = document.getElementById('serverUrl');
-      const hint = document.getElementById('serverUrlHint');
-      if (isFile && !input.value.trim()) {
-        input.value = DEFAULT_SERVER_URL;
-        hint.textContent = 'Using ' + DEFAULT_SERVER_URL + '. Start server: python report_server.py';
+    function setTimeMode(mode) {
+      const presetPanel = document.getElementById('presetPanel');
+      const customPanel = document.getElementById('customPanel');
+      if (mode === 'custom') {
+        presetPanel.classList.remove('visible');
+        customPanel.classList.add('visible');
+      } else {
+        presetPanel.classList.add('visible');
+        customPanel.classList.remove('visible');
       }
-    })();
+    }
+    document.getElementById('timeModePreset').addEventListener('change', function() { setTimeMode('preset'); });
+    document.getElementById('timeModeCustom').addEventListener('change', function() { setTimeMode('custom'); });
 
     (function initFlatpickr() {
       const startEl = document.getElementById('startTime');
@@ -292,13 +489,6 @@
         },
       }));
     })();
-
-    function toggleCustomTime() {
-      const wrap = document.getElementById('customTimeWrap');
-      wrap.classList.toggle('visible', document.getElementById('timeWindow').value === 'custom');
-    }
-    document.getElementById('timeWindow').addEventListener('change', toggleCustomTime);
-    toggleCustomTime();
 
     function showMessage(text, type) {
       const el = document.getElementById('message');
@@ -359,25 +549,32 @@
     document.getElementById('runBtn').addEventListener('click', async () => {
       const runBtn = document.getElementById('runBtn');
       const runBtnText = document.getElementById('runBtnText');
+      const useCustom = document.getElementById('timeModeCustom').checked;
       const timeWindow = document.getElementById('timeWindow').value;
-      const timezone = document.getElementById('timezone').value;
+      const startStr = (document.getElementById('startTime').value || '').trim();
+      const endStr = (document.getElementById('endTime').value || '').trim();
       runBtn.disabled = true;
       runBtnText.innerHTML = '<span class="spinner"></span> Running…';
       hideMessage();
 
+      if (useCustom && (!startStr || !endStr)) {
+        showMessage('Please set both Start and End for the custom range.', 'error');
+        runBtn.disabled = false;
+        runBtnText.textContent = 'Run report';
+        return;
+      }
+
       const selected = Array.from(document.querySelectorAll('input[name="collection"]:checked')).map(c => c.value);
-      const body = { timezone, collections: selected.length ? selected : REPORT_COLLECTIONS };
-      if (timeWindow === 'custom') {
-        const startStr = document.getElementById('startTime').value;
-        const endStr = document.getElementById('endTime').value;
-        if (!startStr || !endStr) {
-          showMessage('Select both start and end time for the custom range.', 'error');
-          runBtn.disabled = false;
-          runBtnText.textContent = 'Run report';
-          return;
-        }
+      const body = { timezone: 'America/Denver', collections: selected.length ? selected : REPORT_COLLECTIONS };
+      if (useCustom) {
         body.start_time = startStr.replace(' ', 'T') + ':00';
         body.end_time = endStr.replace(' ', 'T') + ':00';
+      } else if (timeWindow === '365d') {
+        body.last_days = 365;
+      } else if (timeWindow === '180d') {
+        body.last_days = 180;
+      } else if (timeWindow === '90d') {
+        body.last_days = 90;
       } else if (timeWindow === '30d') {
         body.last_days = 30;
       } else if (timeWindow === '7d') {
@@ -385,9 +582,12 @@
       } else {
         body.last_hours = 24;
       }
-      const apiBase = (document.getElementById('serverUrl').value || '').trim().replace(/\/$/, '');
+      const apiBase = window.location.protocol === 'file:' ? DEFAULT_SERVER_URL : '';
       const reportUrl = apiBase ? (apiBase + '/api/report') : '/api/report';
       const headers = { 'Content-Type': 'application/json' };
+
+      const loadingEl = document.getElementById('loadingNote');
+      loadingEl.classList.add('visible');
 
       try {
         const res = await fetch(reportUrl, {
@@ -418,17 +618,17 @@
           plotContainer.classList.add('empty-state');
           plotContainer.innerHTML = 'Chart not available.';
         }
-        showMessage('Report ready. Download CSV or chart above.', 'success');
+        showMessage('Report ready. Download CSV or chart below.', 'success');
       } catch (e) {
         let msg = e.message || 'Request failed';
         if (msg === 'Failed to fetch' || msg.includes('fetch')) {
-          const base = (document.getElementById('serverUrl').value || '').trim() || DEFAULT_SERVER_URL;
-          msg = 'Could not reach the report server. Make sure the server is running (python report_server.py), then open this app at http://127.0.0.1:5050/ or enter that URL above if you opened this page as a file.';
+          msg = 'Could not reach the report server. Make sure the server is running and open this app at http://127.0.0.1:5050/';
         } else {
           msg = 'Request failed: ' + msg;
         }
         showMessage(msg, 'error');
       } finally {
+        loadingEl.classList.remove('visible');
         runBtn.disabled = false;
         runBtnText.textContent = 'Run report';
       }

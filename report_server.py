@@ -9,6 +9,7 @@ are configured via environment variables. See README.
 
 import base64
 import os
+import sys
 import traceback
 from datetime import datetime
 
@@ -20,6 +21,10 @@ except ImportError:
     from backports.zoneinfo import ZoneInfo
 
 load_dotenv()
+if getattr(sys, "frozen", False):
+    app_dir = os.path.dirname(sys.executable)
+    load_dotenv(os.path.join(app_dir, ".env"))
+    load_dotenv(os.path.join(app_dir, "config.env"))  # visible name in zip
 
 try:
     from flask import Flask, send_file, request, jsonify
@@ -112,15 +117,18 @@ def run_report(
         q["start_ts"] = start_ts
         q["end_ts"] = end_ts
         tz = ZoneInfo(timezone_name)
+        start_dt = datetime.fromtimestamp(start_ts, tz=tz)
+        end_dt = datetime.fromtimestamp(end_ts, tz=tz)
         time_label = (
-            datetime.fromtimestamp(start_ts, tz=tz).strftime("%Y-%m-%d")
+            start_dt.strftime("%Y-%m-%d")
             + "_to_"
-            + datetime.fromtimestamp(end_ts, tz=tz).strftime("%Y-%m-%d")
+            + end_dt.strftime("%Y-%m-%d")
         )
+        # Start with minutes; end with day, hour, minute, and timezone (e.g. MST)
         display_label = (
-            datetime.fromtimestamp(start_ts, tz=tz).strftime("%Y-%m-%d %H:%M")
+            start_dt.strftime("%Y-%m-%d %H:%M")
             + " to "
-            + datetime.fromtimestamp(end_ts, tz=tz).strftime("%Y-%m-%d %H:%M")
+            + end_dt.strftime("%b %d, %H:%M %Z")
         )
     elif last_days is not None:
         q["last_days"] = last_days
@@ -169,7 +177,7 @@ def table_to_rows(participant_ids, table, collections):
     return rows
 
 
-_ROOT = os.path.dirname(os.path.abspath(__file__))
+_ROOT = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
 
 
 @app.route("/")
@@ -208,11 +216,12 @@ def api_report():
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
     rows = table_to_rows(participant_ids, table, coll_list)
-    date_part = datetime.now().strftime("%Y-%m-%d")
-    safe_label = time_label.replace(" ", "")
-    tz_suffix = tz.split("/")[-1] if "/" in tz else tz
-    csv_filename = f"report_{date_part}_{run_ts}_{safe_label}_{tz_suffix}.csv"
-    plot_filename = f"report_{date_part}_{run_ts}_{safe_label}_{tz_suffix}.png"
+    # Human-readable filename: start with minutes, end with day hour minute MST (no Denver after MST)
+    generated_readable = run_ts[:10] + " " + run_ts[11:13] + "-" + run_ts[13:]  # YYYY-MM-DD HH-MM
+    range_readable = display_label  # e.g. "2026-02-10 00:00 to Feb 15, 23:59 MST" or "last 24 hours"
+    base_readable = f"report generated at {generated_readable} {range_readable}"
+    csv_filename = base_readable + ".csv"
+    plot_filename = base_readable + ".png"
     try:
         plot_bytes, _ = _plot_daily_report_to_bytes(
             participant_ids, coll_list, table,

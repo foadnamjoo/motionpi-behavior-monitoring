@@ -63,15 +63,49 @@ Uses the default weekly report (last 7 days, America/Denver). Edit `QUERIES` in 
 - **CORS**: Disabled by default. Set `CORS_ORIGIN` only when you need cross-origin access (e.g. standalone HTML); use a specific origin instead of `*` when possible.
 - **API key**: Set `REPORT_API_KEY` in production and send it in the `X-API-Key` header (or `api_key` query) from the client if you expose the server beyond localhost.
 
+## Packaged app (double-click, no Python visible)
+
+You can build a single app that starts the server and opens the browser so users don’t need Python installed.
+
+1. **Install build dependency**
+   ```bash
+   pip install -r requirements-build.txt
+   ```
+
+2. **Build**
+   ```bash
+   pyinstaller MotionPI_Report.spec
+   ```
+
+3. **Output**
+   - **macOS**: `dist/MotionPI Report` (single executable). Double-click it; the server starts and the default browser opens to the report.
+   - **Windows**: `dist/MotionPI Report.exe`. Same behavior.
+
+4. **Zip for distribution (Mac)**  
+   To build and pack the app with a config template so users can point to your MongoDB:
+   ```bash
+   ./build_and_zip.sh
+   ```
+   This produces **`MotionPI_Report_Mac.zip`** containing the app and `config.env`. Replace the placeholder `MONGODB_URI` in `config.env` with your real connection string before sending the zip to users (or have users set it). Users unzip, then double-click **MotionPI Report** (keep `config.env` in the same folder). No Python on their machine; data comes from your MongoDB.
+
+5. **Distribute**
+   - **With zip**: Send `MotionPI_Report_Mac.zip`; users unzip and run **MotionPI Report** (ensure `config.env` has the correct `MONGODB_URI` for your deployment).
+   - **Without zip**: Give users the executable and a `.env` with `MONGODB_URI=...` in the same folder. They double-click; no terminal or Python required. To stop the server they quit the app (Activity Monitor / Task Manager).
+
 ## Project structure
 
-| File / folder      | Purpose |
-|--------------------|--------|
-| `mongodb_query.py` | Query definitions, time filters, report logic, CLI and plot generation |
-| `report_server.py` | Flask API for the web report |
-| `report_app.html`  | Single-page report UI (table, chart, CSV/PNG download) |
-| `.env`             | MongoDB URI (create from `.env.example`, do not commit) |
-| `requirements.txt` | Python dependencies |
+| File / folder           | Purpose |
+|-------------------------|--------|
+| `mongodb_query.py`      | Query definitions, time filters, report logic, CLI and plot generation |
+| `report_server.py`      | Flask API for the web report |
+| `report_app.html`       | Single-page report UI (table, chart, CSV/PNG download) |
+| `launch_report_app.py`  | Launcher: starts server and opens browser (entry point for packaged app) |
+| `MotionPI_Report.spec`  | PyInstaller spec for the packaged app |
+| `env.dist`             | `.env` / config template (used by `build_and_zip.sh` in the zip) |
+| `build_and_zip.sh`     | Builds app and zips it with `.env` for distribution |
+| `.env`                  | MongoDB URI (create from `.env.example`, do not commit) |
+| `requirements.txt`     | Python dependencies |
+| `requirements-build.txt` | Same + PyInstaller (for building the app) |
 
 ## Time windows and collections
 

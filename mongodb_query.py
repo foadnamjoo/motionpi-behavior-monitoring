@@ -65,7 +65,7 @@ QUERIES = [
 
 def get_client():
     uri = os.environ.get("MONGODB_URI", "mongodb://localhost:27017")
-    return MongoClient(uri)
+    return MongoClient(uri, serverSelectionTimeoutMS=8000)
 
 
 def _get_filter_for_collection(q, collection_name):
