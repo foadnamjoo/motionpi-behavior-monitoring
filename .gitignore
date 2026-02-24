@@ -38,6 +38,7 @@ report_*.png
 report_*.csv
 
 # IDE and OS
+.cursor/
 .idea/
 .vscode/
 .DS_Store
