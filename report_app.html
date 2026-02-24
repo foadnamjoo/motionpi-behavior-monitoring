@@ -10,95 +10,181 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <style>
     :root {
-      --bg: #f9fafb;
+      --bg: #f1f5f9;
+      --bg-subtle: #e2e8f0;
       --surface: #ffffff;
-      --border: #e5e7eb;
-      --text: #111827;
-      --text-secondary: #374151;
-      --text-muted: #6b7280;
-      --primary: #1557b0;
-      --primary-hover: #124a96;
-      --focus-ring: rgba(21, 87, 176, 0.2);
+      --border: #cbd5e1;
+      --border-light: #e2e8f0;
+      --text: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --primary: #0f766e;
+      --primary-hover: #0d9488;
+      --primary-light: #ccfbf1;
+      --accent: #0ea5e9;
+      --focus-ring: rgba(15, 118, 110, 0.25);
       --error-bg: #fef2f2;
-      --error-text: #991b1b;
+      --error-text: #b91c1c;
       --success-bg: #f0fdf4;
-      --success-text: #166534;
-      --radius: 6px;
+      --success-text: #15803d;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 10px 40px rgba(15, 23, 42, 0.1);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg-subtle) 100%);
       color: var(--text);
       font-size: 15px;
-      line-height: 1.5;
+      line-height: 1.55;
       min-height: 100vh;
     }
-    .app { max-width: 900px; margin: 0 auto; padding: 0 24px 48px; }
+    .app { width: 100%; max-width: none; margin: 0; padding: 0 20px 56px; }
 
     .header {
       background: var(--surface);
-      padding: 24px 0;
-      margin-bottom: 32px;
-      border-bottom: 1px solid var(--border);
+      padding: 0;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--border-light);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      position: relative;
+      overflow: hidden;
     }
-    .header h1 {
-      font-size: 20px;
-      font-weight: 600;
+    .header::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: linear-gradient(180deg, var(--primary) 0%, var(--primary-hover) 100%);
+    }
+    .header .header-left {
+      flex: 1;
+      min-width: 0;
+      padding: 24px 24px 24px 28px;
+    }
+    .header .brand {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0 12px;
+      margin-bottom: 8px;
+    }
+    .header .brand-name {
+      font-size: 1.5rem;
+      font-weight: 700;
       color: var(--text);
-      margin-bottom: 4px;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+    }
+    .header .brand-tagline {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.01em;
     }
     .header .credit {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px 8px;
+      line-height: 1.5;
     }
+    .header .credit-label { color: var(--text-muted); font-weight: 500; }
     .header .credit a {
-      color: var(--text-muted);
+      color: var(--primary);
       text-decoration: none;
+      font-weight: 600;
     }
-    .header .credit a:hover { color: var(--primary); text-decoration: underline; }
+    .header .credit a:hover { text-decoration: underline; }
+    .header .credit-sep {
+      color: var(--border);
+      font-weight: 400;
+    }
+    .header .credit-org {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    .header .help-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 12px 22px;
+      margin-right: 24px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--surface);
+      background: var(--primary);
+      border: none;
+      border-radius: var(--radius);
+      text-decoration: none;
+      white-space: nowrap;
+      box-shadow: var(--shadow-sm);
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.02em;
+    }
+    .header .help-link:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
 
     .card {
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 28px;
       margin-bottom: 24px;
+      box-shadow: var(--shadow-md);
     }
     .card h2 {
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 0.9375rem;
+      font-weight: 700;
       color: var(--text-secondary);
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border);
+      margin-bottom: 22px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-light);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
     }
-    .settings-block { margin-bottom: 24px; }
+    .settings-block { margin-bottom: 26px; }
     .settings-block:last-child { margin-bottom: 0; }
     .section-label {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      margin-bottom: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 12px;
       display: block;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
     .field label {
       display: block;
       font-size: 13px;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--text-secondary);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
     .field input, .field select {
       width: 100%;
       max-width: 280px;
-      padding: 10px 12px;
+      padding: 12px 14px;
       font-size: 14px;
       font-family: inherit;
       border: 1px solid var(--border);
       border-radius: var(--radius);
       background: var(--surface);
       color: var(--text);
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
     .field input:focus, .field select:focus {
       outline: none;
@@ -106,56 +192,65 @@
       box-shadow: 0 0 0 3px var(--focus-ring);
     }
     .field select:disabled {
-      background: #f3f4f6;
+      background: var(--bg);
       color: var(--text-muted);
       cursor: not-allowed;
     }
     .time-mode {
-      display: flex;
+      display: inline-flex;
       gap: 0;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-radius: 999px;
+      padding: 4px;
+      background: var(--bg);
       width: fit-content;
-      overflow: hidden;
     }
     .time-mode label {
       display: flex;
       align-items: center;
-      padding: 10px 18px;
+      padding: 10px 22px;
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--text-secondary);
-      background: var(--surface);
+      background: transparent;
       cursor: pointer;
       margin: 0;
-      border-right: 1px solid var(--border);
-      transition: background 0.15s, color 0.15s;
+      border-radius: 999px;
+      transition: background 0.2s, color 0.2s;
     }
-    .time-mode label:last-child { border-right: none; }
-    .time-mode label:hover { background: #f9fafb; }
+    .time-mode label:hover { background: var(--border-light); color: var(--text); }
     .time-mode input { display: none; }
     .time-mode input:checked + label {
       background: var(--primary);
       color: #fff;
       cursor: default;
+      box-shadow: var(--shadow-sm);
     }
-    .time-mode input:not(:checked) + label:hover { color: var(--text); }
     .time-panel { display: none; }
     .time-panel.visible { display: block; }
     .collections-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px 24px;
+      gap: 10px 20px;
       align-items: center;
     }
     .collections-row label {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       font-size: 14px;
+      font-weight: 500;
       color: var(--text-secondary);
       cursor: pointer;
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .collections-row label:hover {
+      background: var(--primary-light);
+      border-color: var(--border-light);
     }
     .collections-row input[type="checkbox"] {
       width: 18px;
@@ -178,57 +273,244 @@
     }
 
     .btn {
-      padding: 10px 20px;
-      font-size: 14px;
+      padding: 12px 24px;
+      font-size: 15px;
       font-weight: 600;
       font-family: inherit;
       border: none;
       border-radius: var(--radius);
       cursor: pointer;
-      transition: background 0.15s;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
     }
     .btn-primary {
       background: var(--primary);
       color: #fff;
+      box-shadow: var(--shadow-sm);
     }
-    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
-    .btn-primary:disabled { background: #9ca3af; cursor: not-allowed; }
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.35);
+    }
+    .btn-primary:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; }
     .btn-secondary {
       background: var(--surface);
       color: var(--text-secondary);
       border: 1px solid var(--border);
     }
-    .btn-secondary:hover { border-color: var(--text-muted); color: var(--text); }
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+    .btn-sm { padding: 8px 16px; font-size: 13px; }
 
     .message {
-      padding: 14px 16px;
-      border-radius: var(--radius);
+      padding: 16px 20px;
+      border-radius: var(--radius-lg);
       margin-bottom: 24px;
       font-size: 14px;
       display: none;
+      border: 1px solid transparent;
+      font-weight: 500;
     }
-    .message.error { background: var(--error-bg); color: var(--error-text); display: block; }
-    .message.success { background: var(--success-bg); color: var(--success-text); display: block; }
+    .message.error {
+      background: var(--error-bg);
+      color: var(--error-text);
+      border-color: #fecaca;
+      display: block;
+    }
+    .message.success {
+      background: var(--success-bg);
+      color: var(--success-text);
+      border-color: #bbf7d0;
+      display: block;
+    }
+    .message.success .btn { margin-left: 10px; margin-right: 6px; }
 
     .results-section { display: none; }
     .results-section.visible { display: block; }
+    .results-section { width: 100%; }
+    .results-section .card:first-of-type {
+      border-top: 3px solid var(--primary);
+    }
+    .results-section .card,
+    .results-section .plot-section {
+      max-width: 100%;
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .results-section .card > h2,
+    .results-section .results-header,
+    .results-section .results-quick-scan,
+    .results-section .table-legend {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+    .section-header-with-download,
+    .table-section-header {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 0 16px;
+      margin-bottom: 12px;
+    }
+    .table-section-header { margin-bottom: 8px; }
+    .section-header-with-download h3,
+    .table-section-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+    }
+    .results-section .plot-section h3,
+    .results-section .plot-section #plotContainer {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+    .results-section .plot-section .section-header-with-download { padding-left: 16px; padding-right: 16px; }
+    .results-section .plot-section #plotContainer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .results-section .plot-section #plotContainer img {
+      max-width: 100%;
+      height: auto;
+    }
     .results-header {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
     }
     .results-meta { font-size: 14px; color: var(--text-muted); }
     .results-meta strong { color: var(--text); }
-    .downloads { display: flex; gap: 8px; flex-wrap: wrap; }
+    .downloads { display: flex; gap: 10px; flex-wrap: wrap; }
+    .results-quick-scan {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 14px 20px;
+      margin-bottom: 16px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+      border: 1px solid #99f6e4;
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 20px;
+    }
+    .results-quick-scan .quick-red { color: #b91c1c; font-weight: 700; }
+    .results-quick-scan .quick-missing { color: #b45309; font-weight: 700; }
+    .results-quick-scan .quick-battery { color: #047857; font-weight: 700; }
+    .table-legend {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-light);
+      line-height: 1.6;
+    }
+    .table-legend .legend-zero { color: var(--text-muted); font-weight: 500; }
+    .table-legend .legend-red { color: #b91c1c; font-weight: 600; }
+    .table-legend .legend-battery { color: #047857; font-weight: 500; }
+    .column-visibility-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 16px;
+      padding: 16px 20px;
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+    .column-visibility-row .section-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .column-visibility-checkboxes { display: flex; flex-wrap: wrap; gap: 10px 18px; }
+    .column-visibility-checkboxes label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .column-visibility-checkboxes label:hover {
+      background: var(--primary-light);
+      border-color: #99f6e4;
+    }
+    .study-summary-panel {
+      margin-top: 20px;
+      margin-bottom: 20px;
+      padding: 20px 24px;
+      background: linear-gradient(180deg, #f0fdfa 0%, #ccfbf1 100%);
+      border: 1px solid #99f6e4;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+    .study-summary-panel h3 {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+    .study-summary-panel .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px 24px;
+      margin-bottom: 16px;
+    }
+    .study-summary-panel .summary-item {
+      font-size: 13px;
+    }
+    .study-summary-panel .summary-item strong { color: var(--text); }
+    .study-summary-panel .summary-item .value { font-weight: 600; color: var(--primary); }
+    .study-summary-panel .summary-formula { display: block; margin-top: 4px; font-size: 11px; color: var(--text-muted); font-weight: normal; line-height: 1.3; }
+    .study-summary-panel .summary-collections { margin-top: 12px; font-size: 13px; }
+    .study-summary-panel .summary-collections table { width: 100%; max-width: 500px; border-collapse: collapse; }
+    .study-summary-panel .summary-collections th, .study-summary-panel .summary-collections td { text-align: left; padding: 4px 8px 4px 0; }
+    .study-summary-panel .summary-collections th.th-with-formula { font-weight: 600; vertical-align: bottom; }
+    .study-summary-panel .summary-collections th.th-with-formula .summary-formula { font-weight: normal; margin-top: 2px; }
+    .study-summary-panel .summary-collections .summary-not-queried { font-style: italic; color: var(--text-muted); font-weight: normal; }
+    .study-summary-panel .summary-export { margin-top: 16px; }
+    .data-table tbody tr.row-red-flag { background: #fef2f2; }
+    .data-table tbody tr.row-red-flag td { background: #fef2f2; }
+    .data-table tbody tr.row-red-flag:hover td { background: #fee2e2; }
+    .data-table tbody tr.row-red-flag td:first-child { background: #fef2f2; }
+    .data-table tbody tr.row-red-flag:hover td:first-child { background: #fee2e2; }
+    .data-table tbody tr.row-red-flag td.cell-zero { background: #fef2f2; }
+    .data-table tbody tr.row-red-flag:hover td.cell-zero { background: #fee2e2; }
+    .data-table tbody tr.row-no-data:not(.row-red-flag) { background: #fffbeb; }
+    .data-table tbody tr.row-no-data:not(.row-red-flag):hover { background: #fef3c7; }
+    .data-table td.cell-zero { color: var(--text-muted); background: #f8fafc; }
 
     .table-wrap {
       overflow-x: auto;
       border-radius: var(--radius);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-light);
       margin: 16px 0;
+      box-shadow: var(--shadow-sm);
+      background: var(--surface);
     }
     .data-table {
       width: 100%;
@@ -236,42 +518,118 @@
       font-size: 14px;
     }
     .data-table th, .data-table td {
-      padding: 12px 16px;
+      padding: 14px 18px;
       text-align: right;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--border-light);
+      transition: background 0.15s;
     }
     .data-table th {
-      background: #f9fafb;
-      font-weight: 600;
+      background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+      font-weight: 700;
       color: var(--text-secondary);
-      font-size: 13px;
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
     }
+    .data-table td.red-flag-cell { color: #b91c1c; font-weight: 700; }
+    .data-table th.th-has-tip { border-bottom: 1px dotted var(--border); }
+    .data-table th.th-draggable {
+      cursor: grab;
+      user-select: none;
+      position: relative;
+    }
+    .data-table th.th-draggable::after {
+      content: '';
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 14px;
+      background: linear-gradient(180deg, var(--border) 0%, var(--text-muted) 100%);
+      border-radius: 2px;
+      opacity: 0.4;
+    }
+    .data-table th.th-draggable:active { cursor: grabbing; }
+    .data-table th.th-dragging {
+      opacity: 0.4;
+      background: var(--primary-light) !important;
+    }
+    .data-table th.th-drop-before {
+      box-shadow: inset 4px 0 0 var(--primary);
+      background: var(--primary-light) !important;
+    }
+    .drag-column-ghost {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      font: inherit;
+      font-size: 14px;
+      border: 2px solid var(--primary);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 12px 32px rgba(15, 118, 110, 0.25);
+      background: var(--surface);
+      z-index: 10000;
+      max-height: 340px;
+      overflow-y: auto;
+    }
+    .drag-column-ghost .drag-ghost-head {
+      padding: 12px 16px;
+      background: linear-gradient(180deg, #f0fdfa 0%, #ccfbf1 100%);
+      font-weight: 700;
+      text-align: right;
+      border-bottom: 2px solid var(--primary);
+      white-space: nowrap;
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+    .drag-column-ghost .drag-ghost-head:first-child { text-align: left; }
+    .drag-column-ghost .drag-ghost-cell {
+      padding: 12px 16px;
+      background: #fff;
+      text-align: right;
+      border-bottom: 1px solid var(--border-light);
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .drag-column-ghost .drag-ghost-cell:first-child { text-align: left; }
     .data-table th:first-child, .data-table td:first-child {
-      text-align: left;
       position: sticky;
       left: 0;
+      text-align: left;
       background: var(--surface);
       z-index: 1;
     }
-    .data-table th:first-child { background: #f9fafb; }
-    .data-table tbody tr:hover { background: #f9fafb; }
+    .data-table th:first-child { background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%); min-width: 100px; }
+    .data-table th:nth-child(2) { min-width: 72px; text-align: center; }
+    .data-table td:nth-child(2) { text-align: center; }
+    .data-table tbody tr:hover { background: #f8fafc; }
+    .data-table tbody tr:nth-child(even):not(:hover):not(.row-red-flag):not(.row-no-data) { background: #fafbfc; }
     .data-table .num { font-variant-numeric: tabular-nums; }
     .data-table tr:last-child td { border-bottom: none; }
 
-    .plot-section { margin-top: 24px; }
+    .plot-section { margin-top: 28px; }
+    .plot-section-inline { margin-top: 24px; margin-bottom: 28px; }
+    .plot-section-inline h3 { margin-bottom: 12px; }
     .plot-section h3 {
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 0.9375rem;
+      font-weight: 700;
       color: var(--text-secondary);
-      margin-bottom: 12px;
+      margin-bottom: 14px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
     }
     #plotContainer {
       border-radius: var(--radius);
-      border: 1px solid var(--border);
-      background: #fafafa;
-      padding: 16px;
+      border: 1px solid var(--border-light);
+      background: linear-gradient(180deg, #fafbfc 0%, #f1f5f9 100%);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
     }
-    #plotContainer img { max-width: 100%; height: auto; display: block; }
+    #plotContainer img { max-width: 100%; height: auto; display: block; border-radius: 4px; }
 
     .spinner {
       display: inline-block;
@@ -285,71 +643,156 @@
       margin-right: 8px;
     }
     .spinner-large {
-      width: 40px;
-      height: 40px;
-      border-width: 3px;
+      width: 36px;
+      height: 36px;
+      border-width: 2.5px;
       border-color: var(--border);
       border-top-color: var(--primary);
-      margin: 0 auto 20px;
-      display: block;
+      flex-shrink: 0;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     .loading-note {
       display: none;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px 24px;
-      margin-bottom: 24px;
+      background: linear-gradient(165deg, #f0fdfa 0%, #e6fffa 28%, #fafbfc 60%, #f0fdfa 100%);
+      border: 1px solid rgba(13, 148, 136, 0.2);
+      border-radius: 20px;
+      padding: 36px 40px 40px;
+      margin-bottom: 28px;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 560px;
+      box-shadow: 0 8px 32px rgba(15, 118, 110, 0.12), 0 2px 8px rgba(0,0,0,0.04);
+      position: relative;
+      overflow: hidden;
+    }
+    .loading-note::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 20%, rgba(204, 251, 241, 0.4) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .loading-note.visible {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       text-align: center;
+      gap: 26px;
+      animation: loading-card-soft 3s ease-in-out infinite;
     }
-    .loading-note.visible { display: block; }
-    .loading-note .loading-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
-    .loading-note .loading-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; max-width: 480px; margin-left: auto; margin-right: auto; line-height: 1.6; }
-    .wait-graphic {
-      margin: 0 auto;
-      width: 180px;
+    @keyframes loading-card-soft {
+      0%, 100% { box-shadow: 0 8px 32px rgba(15, 118, 110, 0.12), 0 2px 8px rgba(0,0,0,0.04); }
+      50% { box-shadow: 0 12px 40px rgba(15, 118, 110, 0.18), 0 4px 12px rgba(0,0,0,0.06); }
+    }
+    .loading-note .loading-content {
+      width: 100%;
+      max-width: 52em;
+      position: relative;
+      z-index: 1;
+    }
+    .loading-note .spinner-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 50%;
+      box-shadow: 0 4px 16px rgba(15, 118, 110, 0.15);
+    }
+    .loading-note .loading-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0f766e;
+      margin: 0 0 0.75rem 0;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .loading-note .loading-desc {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      margin: 0 0 0.75rem 0;
+      line-height: 1.7;
+      font-weight: 400;
+    }
+    .loading-note .loading-fun {
+      font-size: 0.9375rem;
       color: var(--primary);
+      margin: 0;
+      line-height: 1.6;
+      font-weight: 600;
+      font-style: italic;
     }
-    .wait-graphic svg { display: block; width: 100%; height: auto; }
-    .wait-graphic .blob { animation: blob-bounce 1.4s ease-in-out infinite; transform-origin: center; }
-    .wait-graphic .blob:nth-child(1) { animation-delay: 0s; }
-    .wait-graphic .blob:nth-child(2) { animation-delay: 0.2s; }
-    .wait-graphic .blob:nth-child(3) { animation-delay: 0.4s; }
-    .wait-graphic .blob:nth-child(4) { animation-delay: 0.1s; }
-    .wait-graphic .blob:nth-child(5) { animation-delay: 0.3s; }
-    .wait-graphic .blob:nth-child(6) { animation-delay: 0.5s; }
-    .wait-graphic .face-smile { animation: face-wiggle 2s ease-in-out infinite; transform-origin: center bottom; }
-    .wait-graphic .sparkle { animation: sparkle-pop 1.8s ease-in-out infinite; opacity: 0.8; }
-    .wait-graphic .sparkle:nth-of-type(1) { animation-delay: 0s; }
-    .wait-graphic .sparkle:nth-of-type(2) { animation-delay: 0.6s; }
-    .wait-graphic .sparkle:nth-of-type(3) { animation-delay: 1.2s; }
-    @keyframes blob-bounce { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-10px) scale(1.05); } }
-    @keyframes face-wiggle { 0%, 90%, 100% { transform: rotate(0deg); } 92% { transform: rotate(-4deg); } 96% { transform: rotate(4deg); } }
-    @keyframes sparkle-pop { 0%, 100% { transform: scale(0.8); opacity: 0.4; } 50% { transform: scale(1.2); opacity: 1; } }
+    .loading-note .loading-cartoon-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin-top: 24px;
+      position: relative;
+      z-index: 1;
+    }
+    .loading-note .loading-cat-img {
+      width: 140px;
+      max-width: 50vw;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
     .empty-state {
       text-align: center;
-      padding: 40px 24px;
+      padding: 48px 28px;
       color: var(--text-muted);
       font-size: 14px;
+      font-weight: 500;
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      border-radius: var(--radius);
+      border: 1px dashed var(--border);
     }
 
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .field-hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; margin-left: 24px; }
+    .include-options-row { margin-top: 8px; }
+    .include-options-row label + label { margin-left: 24px; }
+    .include-option-label { font-size: 14px; font-weight: 500; display: inline-block; margin-right: 16px; }
+    .include-column-options { margin-top: 10px; margin-left: 20px; display: flex; flex-wrap: wrap; flex-direction: column; gap: 6px; }
+    .include-column-options-label { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 2px; }
+    .include-sub-option { font-size: 13px; display: block; font-weight: 400; }
+    .include-hint { margin-left: 0; margin-top: 8px; }
     .footer:empty { display: none; }
   </style>
 </head>
 <body>
   <div class="app">
     <header class="header">
-      <h1>MotionPI Surveillance · Participant activity monitoring</h1>
-      <p class="credit">Developed by <a href="https://users.cs.utah.edu/~foad27/" target="_blank" rel="noopener">Foad Namjoo</a>, Kahlert School of Computing, University of Utah</p>
+      <div class="header-left">
+        <div class="brand">
+          <h1 class="brand-name">MotionPI Participant Surveillance</h1>
+          <span class="brand-tagline"></span>
+        </div>
+        <p class="credit">
+          <span class="credit-label">Developed by</span>
+          <a href="https://users.cs.utah.edu/~foad27/" target="_blank" rel="noopener">Foad Namjoo</a>
+          <span class="credit-sep">·</span>
+          <span class="credit-org">Kahlert School of Computing, University of Utah</span>
+        </p>
+      </div>
+      <a href="help.html" class="help-link">Help</a>
     </header>
 
     <section class="card">
       <h2>Report parameters</h2>
 
       <div class="settings-block">
-        <span class="section-label">Data sources</span>
+        <span class="section-label">Data collection sources</span>
         <div class="collections-row">
           <label><input type="checkbox" name="collection" value="userlocations" checked> Locations</label>
           <label><input type="checkbox" name="collection" value="userenmos" checked> ENMO</label>
@@ -394,6 +837,19 @@
         </div>
       </div>
 
+      <div class="settings-block">
+        <span class="section-label">Chart type</span>
+        <div class="field">
+          <label for="plotType" class="sr-only">Visualization</label>
+          <select id="plotType" aria-label="Choose how to visualize activity data">
+            <option value="stacked" selected>Stacked bar </option>
+            <option value="bar">Bar chart — one panel per collection</option>
+            <option value="horizontal_bar">Horizontal bar — participants on Y-axis</option>
+          </select>
+        </div>
+        <p class="field-hint" style="margin-left: 0; margin-top: 6px;">Stacked bar: click a legend item to add or remove that layer in the same plot.</p>
+      </div>
+
       <div class="settings-block" style="margin-top: 24px;">
         <button type="button" id="runBtn" class="btn btn-primary">
           <span id="runBtnText">Run report</span>
@@ -404,27 +860,21 @@
     <div id="message" class="message"></div>
 
     <div id="loadingNote" class="loading-note">
-      <span class="spinner spinner-large"></span>
-      <p class="loading-title">Generating your report…</p>
-      <p class="loading-desc">We’re querying MongoDB and aggregating results for your chosen collections and date range. More collections and longer ranges mean more data to scan — so runtimes can be anywhere from a few seconds to 15 minutes. That’s expected; no need to worry.</p>
-      <div class="wait-graphic" aria-hidden="true">
-        <svg viewBox="0 0 180 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="50" y="22" width="80" height="56" rx="8" stroke="currentColor" stroke-width="1.8" fill="none" opacity="0.5"/>
-          <g class="face-smile">
-            <circle cx="78" cy="42" r="4" fill="currentColor" opacity="0.8"/>
-            <circle cx="102" cy="42" r="4" fill="currentColor" opacity="0.8"/>
-            <path d="M74 54 Q90 64 106 54" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.8"/>
-          </g>
-          <circle class="blob" cx="32" cy="72" r="10" fill="currentColor" opacity="0.7"/>
-          <circle class="blob" cx="52" cy="78" r="8" fill="currentColor" opacity="0.6"/>
-          <circle class="blob" cx="72" cy="74" r="9" fill="currentColor" opacity="0.65"/>
-          <circle class="blob" cx="108" cy="76" r="8" fill="currentColor" opacity="0.6"/>
-          <circle class="blob" cx="128" cy="72" r="10" fill="currentColor" opacity="0.7"/>
-          <circle class="blob" cx="148" cy="78" r="7" fill="currentColor" opacity="0.55"/>
-          <path class="sparkle" d="M38 28 L40 32 L44 34 L40 36 L38 40 L36 36 L32 34 L36 32 Z" fill="currentColor"/>
-          <path class="sparkle" d="M90 14 L92 18 L96 20 L92 22 L90 26 L88 22 L84 20 L88 18 Z" fill="currentColor"/>
-          <path class="sparkle" d="M142 30 L144 34 L148 36 L144 38 L142 42 L140 38 L136 36 L140 34 Z" fill="currentColor"/>
-        </svg>
+      <div class="loading-content">
+        <p class="loading-title">Generating your report…</p>
+        <p class="loading-desc">I’m querying MongoDB and aggregating results for your chosen collections and date range. More collections and longer ranges mean more data to scan — runtimes can be anywhere from a few seconds to 15 minutes. That’s expected; no need to worry.</p>
+        <p class="loading-fun">Foad built this so you could grab a coffee while the numbers crunch;<br>I've got you! ☕</p>
+        <div class="loading-cartoon-wrap" aria-hidden="true">
+          <img src="cat-loader.png" alt="" class="loading-cat-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <svg class="loading-cat-img loading-cat-svg" style="display: none;" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <ellipse cx="32" cy="40" rx="18" ry="14" fill="#f4a261" stroke="#2d3436" stroke-width="1.5"/>
+            <circle cx="32" cy="36" r="12" fill="#f4a261" stroke="#2d3436" stroke-width="1.5"/>
+            <path d="M24 28 L28 24 L32 28 L36 24 L40 28" stroke="#2d3436" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <circle cx="27" cy="34" r="2" fill="#2d3436"/><circle cx="37" cy="34" r="2" fill="#2d3436"/>
+            <path d="M30 40 Q32 42 34 40" stroke="#2d3436" stroke-width="0.8" fill="none"/>
+            <path d="M14 38 L8 34 M50 38 L56 34" stroke="#2d3436" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+        </div>
       </div>
     </div>
 
@@ -433,16 +883,29 @@
         <h2>Results</h2>
         <div class="results-header">
           <p class="results-meta" id="meta"></p>
-          <div class="downloads">
-            <button type="button" id="downloadCsvBtn" class="btn btn-secondary">Download CSV</button>
-            <button type="button" id="downloadPlotBtn" class="btn btn-secondary">Download chart</button>
+        </div>
+        <div class="results-quick-scan" id="quickScan"></div>
+        <div id="studySummaryPanel" class="study-summary-panel" style="display: none;"></div>
+        <div class="plot-section plot-section-inline">
+          <div class="section-header-with-download">
+            <h3 id="plotSectionTitle">Activity summary</h3>
+            <button type="button" class="btn btn-secondary btn-sm section-dl-chart" id="sectionDlChart" style="display: none;">Download chart</button>
           </div>
+          <div id="plotContainer" class="empty-state">Run the report to view the chart.</div>
+        </div>
+        <div class="table-section-header" style="display: none;">
+          <h3>Data table</h3>
+          <button type="button" class="btn btn-secondary btn-sm section-dl-csv" id="sectionDlCsv">Download CSV</button>
+        </div>
+        <div id="columnVisibilityRow" class="column-visibility-row" style="display: none;">
+          <span class="section-label">Show/hide columns:</span>
+          <div id="columnVisibilityCheckboxes" class="column-visibility-checkboxes"></div>
         </div>
         <div class="table-wrap" id="tableWrapper"></div>
-      </div>
-      <div class="card plot-section">
-        <h3>Activity summary</h3>
-        <div id="plotContainer" class="empty-state">Run the report to view the chart.</div>
+        <div class="table-legend" id="tableLegend">
+          <p><strong>How to read:</strong> <span class="legend-zero">0 or empty</span> = no data in this range (possible non-collector). <span class="legend-red">Red flag</span> = wristband low for 1h+ between 9AM–10PM (check charging). <span class="legend-battery">Battery alerts</span> = count of low battery; high counts may mean charging is being ignored.</p>
+          <p style="margin-top: 10px;"><strong>Tip:</strong> Drag a column header to reorder columns for easier comparison.</p>
+        </div>
       </div>
     </section>
 
@@ -450,10 +913,13 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     let lastResponse = null;
+    let activityChartInstance = null;
     const REPORT_COLLECTIONS = ['userlocations', 'userenmos', 'surveys', 'userlogs', 'userbatteries'];
     const DEFAULT_SERVER_URL = 'http://127.0.0.1:5050';
+    const SESSION_STORAGE_REPORT_KEY = 'motionpi_last_report';
 
     function setTimeMode(mode) {
       const presetPanel = document.getElementById('presetPanel');
@@ -496,10 +962,195 @@
       el.className = 'message ' + (type || 'error');
       el.style.display = 'block';
     }
+    function showReportSuccess() {
+      const el = document.getElementById('message');
+      el.className = 'message success';
+      el.style.display = 'block';
+      el.innerHTML = 'Your report is ready below. View the table and chart. <button type="button" class="btn btn-secondary msg-dl-csv">Download CSV</button> <button type="button" class="btn btn-secondary msg-dl-chart">Download chart</button> <button type="button" class="btn btn-secondary msg-dl-summary-csv">Summary (CSV)</button>';
+      el.querySelector('.msg-dl-csv')?.addEventListener('click', doDownloadCsv);
+      el.querySelector('.msg-dl-chart')?.addEventListener('click', doDownloadChart);
+      el.querySelector('.msg-dl-summary-csv')?.addEventListener('click', () => {
+        const summary = lastResponse?.study_summary;
+        if (!summary?.metrics_for_export?.length) return;
+        const csv = 'metric_name,value,description\r\n' + summary.metrics_for_export.map(function(m) {
+          return '"' + (m.metric_name || '').replace(/"/g, '""') + '","' + (m.value || '').replace(/"/g, '""') + '","' + (m.description || '').replace(/"/g, '""') + '"';
+        }).join('\r\n');
+        downloadBlob(new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' }), 'study_summary.csv');
+      });
+    }
+
+    function doDownloadChart() {
+      if (!lastResponse) return;
+      if (activityChartInstance) {
+        const chart = activityChartInstance;
+        const visibleDatasets = [];
+        for (let i = 0; i < chart.data.datasets.length; i++) {
+          if (chart.getDatasetMeta(i).hidden !== true) {
+            const d = chart.data.datasets[i];
+            visibleDatasets.push({ label: d.label, data: d.data.slice(), backgroundColor: d.backgroundColor, borderColor: d.borderColor, borderWidth: d.borderWidth });
+          }
+        }
+        if (visibleDatasets.length === 0) return;
+        const container = document.createElement('div');
+        container.style.cssText = 'position:fixed;left:-9999px;top:0;width:' + chart.canvas.width + 'px;height:' + chart.canvas.height + 'px;';
+        document.body.appendChild(container);
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = chart.canvas.width;
+        tempCanvas.height = chart.canvas.height;
+        container.appendChild(tempCanvas);
+        const tempChart = new Chart(tempCanvas, {
+          type: 'bar',
+          data: { labels: chart.data.labels.slice(), datasets: visibleDatasets },
+          options: { animation: false, responsive: false, indexAxis: 'x', scales: { x: { stacked: true, grid: { color: '#e2e8f0' }, ticks: { maxRotation: 45 } }, y: { stacked: true, beginAtZero: true, grid: { color: '#e2e8f0' } } }, plugins: { legend: { position: 'top' }, tooltip: { mode: 'index', intersect: false } } },
+        });
+        const dataUrl = tempChart.toBase64Image('image/png');
+        tempChart.destroy();
+        container.remove();
+        if (!dataUrl) return;
+        const base64 = dataUrl.split(',')[1];
+        if (!base64) return;
+        const bin = atob(base64);
+        const arr = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+        downloadBlob(new Blob([arr], { type: 'image/png' }), lastResponse.plot_filename || 'report.png');
+      } else if (lastResponse.plot_base64) {
+        const bin = atob(lastResponse.plot_base64);
+        const arr = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+        downloadBlob(new Blob([arr], { type: 'image/png' }), lastResponse.plot_filename || 'report.png');
+      }
+    }
+    function doDownloadCsv() {
+      const rows = getVisibleTableRows();
+      if (!rows || rows.length === 0) return;
+      const csv = tableToCsv(rows);
+      downloadBlob(new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' }), lastResponse?.csv_filename || 'report.csv');
+    }
+    document.getElementById('sectionDlCsv')?.addEventListener('click', doDownloadCsv);
+    document.getElementById('sectionDlChart')?.addEventListener('click', doDownloadChart);
     function hideMessage() {
       const el = document.getElementById('message');
       el.className = 'message';
       el.style.display = 'none';
+    }
+
+    function applyReportData(data) {
+      document.getElementById('results').classList.add('visible');
+      const n = (data.table && data.table.length) ? data.table.length - 1 : 0;
+      document.getElementById('meta').innerHTML =
+        '<strong>' + n + ' active participants</strong> · ' + (data.time_label || '') + ' · Generated ' + (data.run_timestamp || '');
+      var tableSectionHeader = document.querySelector('.table-section-header');
+      if (tableSectionHeader) tableSectionHeader.style.display = 'flex';
+      var chartBtn = document.getElementById('sectionDlChart');
+      if (chartBtn) chartBtn.style.display = 'inline-block';
+      renderStudySummary(data.study_summary);
+      renderTable(data.table || []);
+      const plotContainer = document.getElementById('plotContainer');
+      const plotTitleEl = document.getElementById('plotSectionTitle');
+      if (plotTitleEl) {
+        const label = data.plot_type_label || 'Chart';
+        plotTitleEl.textContent = 'Activity summary' + ((data.plot_base64 || data.chart_data) ? ' (' + label + ')' : '');
+      }
+      if (activityChartInstance) {
+        activityChartInstance.destroy();
+        activityChartInstance = null;
+      }
+      if (data.plot_type === 'stacked' && data.chart_data && typeof Chart !== 'undefined') {
+        plotContainer.innerHTML = '';
+        plotContainer.classList.remove('empty-state');
+        const wrap = document.createElement('div');
+        wrap.className = 'chartjs-wrap';
+        wrap.style.cssText = 'position: relative; height: 400px; width: 100%; max-width: 100%;';
+        const canvas = document.createElement('canvas');
+        wrap.appendChild(canvas);
+        plotContainer.appendChild(wrap);
+        const STACKED_COLORS = [
+          '#0f766e', '#0369a1', '#7c3aed', '#ca8a04', '#dc2626',
+          '#0d9488', '#0284c7', '#8b5cf6', '#eab308', '#ef4444',
+        ];
+        const datasets = (data.chart_data.datasets || []).map(function(d, i) {
+          const c = STACKED_COLORS[i % STACKED_COLORS.length];
+          return {
+            label: d.label,
+            data: d.data,
+            backgroundColor: c,
+            borderColor: '#fff',
+            borderWidth: 1,
+          };
+        });
+        activityChartInstance = new Chart(canvas, {
+          type: 'bar',
+          data: { labels: data.chart_data.labels || [], datasets: datasets },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'x',
+            scales: {
+              x: { stacked: true, grid: { color: '#e2e8f0' }, ticks: { maxRotation: 45 } },
+              y: { stacked: true, beginAtZero: true, grid: { color: '#e2e8f0' } },
+            },
+            plugins: {
+              legend: {
+                position: 'top',
+                onClick: function(e, legendItem, legend) {
+                  const idx = legendItem.datasetIndex;
+                  const chart = legend.chart;
+                  const meta = chart.getDatasetMeta(idx);
+                  meta.hidden = meta.hidden === null ? true : null;
+                  chart.update();
+                },
+              },
+              tooltip: { mode: 'index', intersect: false },
+            },
+          },
+        });
+      } else if (data.plot_base64) {
+        plotContainer.innerHTML = '';
+        plotContainer.classList.remove('empty-state');
+        const img = document.createElement('img');
+        img.src = 'data:image/png;base64,' + data.plot_base64;
+        img.alt = 'Report chart';
+        plotContainer.appendChild(img);
+      } else {
+        plotContainer.classList.add('empty-state');
+        plotContainer.innerHTML = (data._restored ? 'Chart not restored (returned from another page). Re-run report to see chart.' : 'Chart not available.');
+      }
+    }
+
+    function saveReportToSession() {
+      if (!lastResponse || !lastResponse.table) return;
+      const copy = {
+        table: lastResponse.table,
+        participant_ids: lastResponse.participant_ids,
+        time_label: lastResponse.time_label,
+        run_timestamp: lastResponse.run_timestamp,
+        csv_filename: lastResponse.csv_filename,
+        plot_filename: lastResponse.plot_filename,
+        plot_type: lastResponse.plot_type,
+        plot_type_label: lastResponse.plot_type_label,
+        chart_data: lastResponse.chart_data,
+        study_summary: lastResponse.study_summary,
+      };
+      try {
+        sessionStorage.setItem(SESSION_STORAGE_REPORT_KEY, JSON.stringify(copy));
+      } catch (e) {}
+    }
+
+    function restoreReportFromSession() {
+      var raw;
+      try {
+        raw = sessionStorage.getItem(SESSION_STORAGE_REPORT_KEY);
+      } catch (e) { return; }
+      if (!raw) return;
+      var data;
+      try {
+        data = JSON.parse(raw);
+      } catch (e) { return; }
+      if (!data.table || !data.participant_ids) return;
+      data._restored = true;
+      lastResponse = data;
+      applyReportData(data);
+      showReportSuccess();
     }
 
     function escapeCsvCell(val) {
@@ -510,6 +1161,18 @@
     function tableToCsv(rows) {
       return rows.map(row => row.map(escapeCsvCell).join(',')).join('\r\n');
     }
+    function getVisibleTableRows() {
+      if (!lastTableRows || lastTableRows.length === 0) return [];
+      const [header, ...data] = lastTableRows;
+      const visibleOrder = lastHeaderOrder
+        ? lastHeaderOrder.filter(l => header.indexOf(l) !== -1 && columnVisibility[l] !== false)
+        : header.filter((h, i) => {
+            if (CUSTOMIZABLE_COLUMN_LABELS.indexOf(h) === -1) return true;
+            return columnVisibility[h] !== false;
+          });
+      const visibleIndices = visibleOrder.map(l => header.indexOf(l));
+      return [visibleOrder, ...data.map(row => visibleIndices.map(i => row[i]))];
+    }
     function downloadBlob(blob, filename) {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -518,27 +1181,288 @@
       URL.revokeObjectURL(a.href);
     }
 
-    function renderTable(rows) {
-      const wrap = document.getElementById('tableWrapper');
-        if (!rows || rows.length === 0) {
-        wrap.innerHTML = '<p class="empty-state">No data for the selected range.</p>';
+    function renderStudySummary(summary) {
+      const panel = document.getElementById('studySummaryPanel');
+      if (!panel) return;
+      if (!summary || (summary.n_participants || 0) === 0) {
+        panel.style.display = 'none';
+        panel.innerHTML = '';
         return;
       }
+      const n = summary.n_participants;
+      const rrMean = summary.response_rate_mean != null ? summary.response_rate_mean.toFixed(4) : 'N/A';
+      const rrSd = summary.response_rate_sd != null ? summary.response_rate_sd.toFixed(4) : 'N/A';
+      const rrOverall = summary.response_rate_overall != null ? (summary.response_rate_overall * 100).toFixed(2) + '%' : 'N/A';
+      let collectionsHtml = '';
+      const msc = summary.mean_sd_per_collection || {};
+      Object.keys(msc).forEach(function(coll) {
+        const info = msc[coll];
+        const notQueried = info.queried === false;
+        const meanStr = notQueried ? 'Not queried' : (info.mean != null ? info.mean : 'N/A');
+        const sdStr = notQueried ? 'Not queried' : (info.sd != null ? info.sd : 'N/A');
+        const cellClass = notQueried ? 'value summary-not-queried' : 'value';
+        collectionsHtml += '<tr><td>' + escapeHtml(info.label || coll) + '</td><td class="' + cellClass + '">' + escapeHtml(String(meanStr)) + '</td><td class="' + (notQueried ? 'summary-not-queried' : '') + '">' + escapeHtml(String(sdStr)) + '</td></tr>';
+      });
+      var formula = {
+        n_participants: 'Count of participants with ≥1 record in the selected time window.',
+        date_range: 'Time window of the report (e.g. last 7 days, last 30 days, or custom range).',
+        response_rate_mean_sd: 'Per participant: submitted surveys ÷ (daily timed EMA or PA/EMA notifications), when denominator &gt; 0; then mean and sample SD across those participants.',
+        response_rate_overall: 'Total submitted surveys ÷ total triggers (daily timed EMA or PA/EMA notifications) over all participants.',
+        red_flag: 'Count (and %) of participants with ≥1 red flag (wristband battery low for 1h+ between 9AM–10PM local).',
+        no_minimal_data: 'Count (and %) of participants with 0 location, 0 ENMO, and 0 survey records in the window.',
+        mean_sd_per_collection: ''
+      };
+      panel.innerHTML =
+        '<h3>Study summary</h3>' +
+        '<div class="summary-grid">' +
+        '<div class="summary-item"><strong>N participants</strong><br><span class="value">' + n + '</span><br><small class="summary-formula">' + escapeHtml(formula.n_participants) + '</small></div>' +
+        '<div class="summary-item"><strong>Date range</strong><br><span class="value">' + escapeHtml(summary.date_range || '') + '</span><br><small class="summary-formula">' + escapeHtml(formula.date_range) + '</small></div>' +
+        '<div class="summary-item"><strong>Response rate (mean ± SD)</strong><br><span class="value">' + rrMean + ' ± ' + rrSd + '</span><br><small class="summary-formula">' + escapeHtml(formula.response_rate_mean_sd) + '</small></div>' +
+        '<div class="summary-item"><strong>Response rate (overall)</strong><br><span class="value">' + rrOverall + '</span><br><small class="summary-formula">' + escapeHtml(formula.response_rate_overall) + '</small></div>' +
+        '<div class="summary-item"><strong>With ≥1 red flag</strong><br><span class="value">' + (summary.n_red_flag ?? '') + ' (' + (summary.pct_red_flag ?? '') + '%)</span><br><small class="summary-formula">' + escapeHtml(formula.red_flag) + '</small></div>' +
+        '<div class="summary-item"><strong>No/minimal data</strong><br><span class="value">' + (summary.n_no_data ?? '') + ' (' + (summary.pct_no_data ?? '') + '%)</span><br><small class="summary-formula">' + escapeHtml(formula.no_minimal_data) + '</small></div>' +
+        '</div>' +
+        (collectionsHtml ? '<div class="summary-collections"><strong>Mean (SD) records per participant by collection</strong><br><small class="summary-formula">' + escapeHtml(formula.mean_sd_per_collection) + '</small><table><thead><tr><th>Collection</th><th class="th-with-formula">Mean<br><small class="summary-formula">sum of records ÷ N participants</small></th><th class="th-with-formula">SD<br><small class="summary-formula">sample SD of per-participant counts</small></th></tr></thead><tbody>' + collectionsHtml + '</tbody></table></div>' : '') +
+        '<div class="summary-export"><button type="button" class="btn btn-secondary btn-sm" id="studySummaryExportCsv">Download summary (CSV)</button></div>';
+      panel.style.display = 'block';
+      document.getElementById('studySummaryExportCsv')?.addEventListener('click', function() {
+        const metrics = summary.metrics_for_export || [];
+        if (!metrics.length) return;
+        const csv = 'metric_name,value,description\r\n' + metrics.map(function(m) {
+          return '"' + (m.metric_name || '').replace(/"/g, '""') + '","' + (m.value || '').replace(/"/g, '""') + '","' + (m.description || '').replace(/"/g, '""') + '"';
+        }).join('\r\n');
+        downloadBlob(new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' }), 'study_summary.csv');
+      });
+    }
+
+    // Columns that exist in the table can be shown/hidden by the user via checkboxes
+    const CUSTOMIZABLE_COLUMN_LABELS = [
+      'Red flag (1h low wristband 9AM–10PM)', 'submitted survey', 'activity survey expired', 'PA survey denied', 'PA/EMA notifications arrived', 'daily timed EMA',
+      'batteries', 'left wristband, below 20% battery alerts', 'right wristband, below 20% battery alerts', 'phone battery below 10% alerts',
+      'left wristband MAC', 'right wristband MAC', 'phone ID',
+      'wristband disconnects', 'data collection disabled', 'logs'
+    ];
+    let lastTableRows = null;
+    let columnVisibility = {};
+    let lastHeaderOrder = null;  // user-defined column order (array of header labels)
+
+    const COLUMN_TOOLTIPS = {
+      'participantID': 'Unique identifier for each participant in the study.',
+      'Red flag (1h low wristband 9AM–10PM)': 'Number of times the participant had a wristband battery low (below 20%) for at least 1 hour in a row between 9 AM and 10 PM. High counts may mean the wristband was not charged.',
+      'left wristband MAC': 'Hardware address (MAC) of the left wristband device. Used to identify the physical device when battery alerts are reported.',
+      'right wristband MAC': 'Hardware address (MAC) of the right wristband device. Used to identify the physical device when battery alerts are reported.',
+      'phone ID': 'Identifier of the phone used by the participant (last 4 characters shown). Shown when phone battery alerts are included.',
+      'location': 'Number of location (GPS) records in the selected time range.',
+      'ENMO': 'Number of ENMO (activity/motion) records in the selected time range.',
+      'surveys': 'Number of survey responses in the selected time range.',
+      'submitted survey': 'Number of submitted survey responses in the selected time range.',
+      'logs': 'Total log entries in the time range (wristband connect/disconnect, survey triggers, data collection, battery alerts). See Help for event details.',
+      'wristband disconnects': 'Count of disconnect-wristband-to-app events. High counts may indicate connectivity or usage issues.',
+      'data collection disabled': 'Count of Data Collection Disabled events. Tracks how often collection was turned off.',
+      'activity survey expired': 'Count of Activity Survey Expired events (survey not answered within 30 min). High count may indicate low engagement.',
+      'PA survey denied': 'Count of PA_denied events (participant answered No to the physical-activity prompt).',
+      'PA/EMA notifications arrived': 'Count of PA_EMA_new-notification events: how many survey (PA-EMA) notifications were delivered to the participant\'s phone in the time range.',
+      'daily timed EMA': 'Count of daily timed survey triggers: morning_survey_trigger, afternoon_survey_trigger, and evening_survey_trigger events in the time range (EMA delivered to the participant\'s phone).',
+      'batteries': 'Number of battery level records (wristbands and phone) in the selected time range.',
+      'left wristband, below 20% battery alerts': 'Count of records when the left wristband battery was below 20%. High counts may indicate the wristband was not charged regularly.',
+      'right wristband, below 20% battery alerts': 'Count of records when the right wristband battery was below 20%. High counts may indicate the wristband was not charged regularly.',
+      'phone battery below 10% alerts': 'Count of records when the phone battery was below 10%. May indicate the phone was not charged regularly.'
+    };
+
+    function renderTable(rows) {
+      rows = rows || lastTableRows;
+      const wrap = document.getElementById('tableWrapper');
+      const quickScanEl = document.getElementById('quickScan');
+      const legendEl = document.getElementById('tableLegend');
+      const visibilityRow = document.getElementById('columnVisibilityRow');
+      const visibilityCheckboxes = document.getElementById('columnVisibilityCheckboxes');
+      if (!rows || rows.length === 0) {
+        lastTableRows = null;
+        wrap.innerHTML = '<p class="empty-state">No data for the selected range.</p>';
+        if (quickScanEl) quickScanEl.innerHTML = '';
+        if (legendEl) legendEl.style.display = 'none';
+        if (visibilityRow) visibilityRow.style.display = 'none';
+        return;
+      }
+      const isNewData = lastTableRows !== rows;
+      lastTableRows = rows;
       const [header, ...data] = rows;
-      let html = '<table class="data-table"><thead><tr>';
-      header.forEach(h => { html += '<th>' + escapeHtml(h) + '</th>'; });
-      html += '</tr></thead><tbody>';
+      if (isNewData) lastHeaderOrder = header.slice();
+      // Initialize visibility for customizable columns that exist in this table
+      CUSTOMIZABLE_COLUMN_LABELS.forEach(label => {
+        if (header.indexOf(label) !== -1 && columnVisibility[label] === undefined) columnVisibility[label] = true;
+      });
+      // Visible column order: use lastHeaderOrder when set (allows drag-to-reorder)
+      const visibleOrder = lastHeaderOrder
+        ? lastHeaderOrder.filter(l => header.indexOf(l) !== -1 && columnVisibility[l] !== false)
+        : header.filter((h, i) => {
+            if (CUSTOMIZABLE_COLUMN_LABELS.indexOf(h) === -1) return true;
+            return columnVisibility[h] !== false;
+          });
+      const visibleIndices = visibleOrder.map(l => header.indexOf(l));
+      const visibleHeader = visibleOrder;
+
+      const colRedFlag = header.findIndex(h => h && h.indexOf('Red flag') !== -1);
+      const dataColLabels = ['location', 'ENMO', 'surveys', 'submitted survey', 'logs', 'batteries'];
+      const colDataCols = header.map((h, i) => dataColLabels.some(l => h && h.toLowerCase().indexOf(l) !== -1) ? i : -1).filter(i => i >= 0);
+      const colBatteryLeft = header.findIndex(h => h && (h.indexOf('battery alerts (left') !== -1 || h.indexOf('left wristband, below 20%') !== -1));
+      const colBatteryRight = header.findIndex(h => h && (h.indexOf('battery alerts (right') !== -1 || h.indexOf('right wristband, below 20%') !== -1));
+
+      let redFlagCount = 0, noDataCount = 0, batteryAlertCount = 0;
       data.forEach(row => {
-        html += '<tr>';
+        if (colRedFlag >= 0 && (parseInt(row[colRedFlag], 10) || 0) > 0) redFlagCount++;
+        if (colDataCols.length > 0) {
+          const allZero = colDataCols.every(ci => { const v = row[ci]; return v === 0 || v === '0' || v === ''; });
+          if (allZero) noDataCount++;
+        }
+        const left = colBatteryLeft >= 0 ? parseInt(row[colBatteryLeft], 10) || 0 : 0;
+        const right = colBatteryRight >= 0 ? parseInt(row[colBatteryRight], 10) || 0 : 0;
+        if (left + right > 0) batteryAlertCount++;
+      });
+
+      if (quickScanEl) {
+        const parts = ['<strong>Quick scan:</strong> ' + data.length + ' participants'];
+        if (redFlagCount > 0) parts.push('<span class="quick-red">' + redFlagCount + ' red-flagged</span>');
+        if (noDataCount > 0) parts.push('<span class="quick-missing">' + noDataCount + ' with little/no data</span>');
+        if (batteryAlertCount > 0) parts.push('<span class="quick-battery">' + batteryAlertCount + ' with battery alerts</span>');
+        quickScanEl.innerHTML = parts.join(' · ');
+        quickScanEl.style.display = 'block';
+      }
+      if (legendEl) legendEl.style.display = 'block';
+
+      const customizableInTable = CUSTOMIZABLE_COLUMN_LABELS.filter(l => header.indexOf(l) !== -1);
+      if (visibilityRow && visibilityCheckboxes) {
+        if (customizableInTable.length === 0) {
+          visibilityRow.style.display = 'none';
+        } else {
+          visibilityRow.style.display = 'flex';
+          visibilityCheckboxes.innerHTML = '';
+          customizableInTable.forEach(label => {
+            const labelEl = document.createElement('label');
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.checked = columnVisibility[label] !== false;
+            cb.dataset.columnLabel = label;
+            cb.addEventListener('change', () => {
+              columnVisibility[label] = cb.checked;
+              renderTable();
+            });
+            labelEl.appendChild(cb);
+            labelEl.appendChild(document.createTextNode(label));
+            visibilityCheckboxes.appendChild(labelEl);
+          });
+        }
+      }
+
+      function escapeAttr(s) {
+        if (s == null) return '';
+        return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      const visibleData = data.map(row => visibleIndices.map(i => row[i]));
+      const colRedFlagVisible = visibleHeader.findIndex(h => h && h.indexOf('Red flag') !== -1);
+      let html = '<table class="data-table"><thead><tr>';
+      visibleHeader.forEach((h, idx) => {
+        const tip = COLUMN_TOOLTIPS[h];
+        const tipClass = tip ? ' th-has-tip' : '';
+        html += '<th class="th-draggable' + tipClass + '" data-col-index="' + idx + '" data-col-label="' + escapeAttr(h) + '" title="' + (tip ? escapeAttr(tip) : 'Drag to reorder') + '" draggable="true">' + escapeHtml(h) + '</th>';
+      });
+      html += '</tr></thead><tbody>';
+      visibleData.forEach(row => {
+        const isRedFlag = colRedFlagVisible >= 0 && (parseInt(row[colRedFlagVisible], 10) || 0) > 0;
+        const dataColIndices = visibleHeader.map((h, i) => dataColLabels.some(l => h && h.toLowerCase().indexOf(l) !== -1) ? i : -1).filter(i => i >= 0);
+        const isNoData = dataColIndices.length > 0 && dataColIndices.every(ci => { const v = row[ci]; return v === 0 || v === '0' || v === ''; });
+        const rowClass = (isRedFlag ? ' row-red-flag' : '') + (isNoData ? ' row-no-data' : '');
+        html += '<tr class="' + rowClass.trim() + '">';
         row.forEach((cell, i) => {
           const align = i === 0 ? 'left' : 'right';
           const numClass = i > 0 ? ' num' : '';
-          html += '<td style="text-align:' + align + '" class="' + numClass + '">' + escapeHtml(cell) + '</td>';
+          const isRedFlagCell = i === colRedFlagVisible && (parseInt(cell, 10) || 0) > 0;
+          const h = visibleHeader[i] || '';
+          const isZero = (cell === 0 || cell === '0' || cell === '') && i > 0 && i !== colRedFlagVisible && h.indexOf('MAC') === -1 && h.indexOf('phone ID') === -1;
+          const extraClass = (isRedFlagCell ? ' red-flag-cell' : '') + (isZero ? ' cell-zero' : '');
+          const text = escapeHtml(String(cell)).replace(/\n/g, '<br>');
+          html += '<td style="text-align:' + align + '" class="' + numClass + extraClass + '">' + text + '</td>';
         });
         html += '</tr>';
       });
       html += '</tbody></table>';
       wrap.innerHTML = html;
+
+      (function attachColumnDragDrop() {
+        const table = wrap.querySelector('table.data-table');
+        const ths = wrap.querySelectorAll('.th-draggable');
+        if (ths.length === 0 || !table) return;
+        function moveOrder(order, fromIdx, toIdx) {
+          const list = order.slice();
+          const item = list.splice(fromIdx, 1)[0];
+          list.splice(toIdx, 0, item);
+          return list;
+        }
+        function buildColumnDragImage(th, colIndex) {
+          const ghost = document.createElement('div');
+          ghost.className = 'drag-column-ghost';
+          ghost.style.width = (th.offsetWidth + 2) + 'px';
+          const headDiv = document.createElement('div');
+          headDiv.className = 'drag-ghost-head';
+          headDiv.textContent = th.textContent || '';
+          headDiv.style.textAlign = colIndex === 0 ? 'left' : 'right';
+          ghost.appendChild(headDiv);
+          const bodyRows = table.querySelectorAll('tbody tr');
+          const maxRows = 12;
+          for (let r = 0; r < Math.min(bodyRows.length, maxRows); r++) {
+            const td = bodyRows[r].cells[colIndex];
+            if (!td) continue;
+            const cellDiv = document.createElement('div');
+            cellDiv.className = 'drag-ghost-cell';
+            cellDiv.textContent = td.textContent || '';
+            cellDiv.style.textAlign = colIndex === 0 ? 'left' : 'right';
+            ghost.appendChild(cellDiv);
+          }
+          if (bodyRows.length > maxRows) {
+            const ellip = document.createElement('div');
+            ellip.className = 'drag-ghost-cell';
+            ellip.style.textAlign = 'center';
+            ellip.textContent = '...';
+            ghost.appendChild(ellip);
+          }
+          return ghost;
+        }
+        ths.forEach(th => {
+          th.addEventListener('dragstart', function(e) {
+            e.dataTransfer.setData('text/plain', e.target.dataset.colIndex);
+            e.dataTransfer.effectAllowed = 'move';
+            e.target.classList.add('th-dragging');
+            const colIndex = parseInt(e.target.dataset.colIndex, 10);
+            const ghost = buildColumnDragImage(th, colIndex);
+            document.body.appendChild(ghost);
+            e.dataTransfer.setDragImage(ghost, e.offsetX || ghost.offsetWidth / 2, e.offsetY || 10);
+            setTimeout(function() { if (ghost.parentNode) ghost.parentNode.removeChild(ghost); }, 0);
+          });
+          th.addEventListener('dragend', function() {
+            wrap.querySelectorAll('.th-dragging, .th-drop-before').forEach(el => el.classList.remove('th-dragging', 'th-drop-before'));
+            document.querySelectorAll('.drag-column-ghost').forEach(el => el.remove());
+          });
+          th.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            wrap.querySelectorAll('.th-drop-before').forEach(el => el.classList.remove('th-drop-before'));
+            this.classList.add('th-drop-before');
+          });
+          th.addEventListener('dragleave', function() {
+            this.classList.remove('th-drop-before');
+          });
+          th.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('th-drop-before');
+            const fromIdx = parseInt(e.dataTransfer.getData('text/plain'), 10);
+            const toIdx = parseInt(this.dataset.colIndex, 10);
+            if (fromIdx === toIdx || isNaN(fromIdx) || isNaN(toIdx)) return;
+            const newVisibleOrder = moveOrder(visibleOrder, fromIdx, toIdx);
+            lastHeaderOrder = newVisibleOrder.concat((lastHeaderOrder || header.slice()).filter(l => !newVisibleOrder.includes(l)));
+            renderTable();
+          });
+        });
+      })();
     }
     function escapeHtml(s) {
       const div = document.createElement('div');
@@ -566,6 +1490,10 @@
 
       const selected = Array.from(document.querySelectorAll('input[name="collection"]:checked')).map(c => c.value);
       const body = { timezone: 'America/Denver', collections: selected.length ? selected : REPORT_COLLECTIONS };
+      // Include battery alert columns when Batteries is selected; visibility is controlled by Show/hide columns below the table
+      body.include_battery_alerts = selected.includes('userbatteries');
+      body.include_phone_battery_alerts = selected.includes('userbatteries');
+      body.plot_type = document.getElementById('plotType').value || 'stacked';
       if (useCustom) {
         body.start_time = startStr.replace(' ', 'T') + ':00';
         body.end_time = endStr.replace(' ', 'T') + ':00';
@@ -588,6 +1516,7 @@
 
       const loadingEl = document.getElementById('loadingNote');
       loadingEl.classList.add('visible');
+      loadingEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
       try {
         const res = await fetch(reportUrl, {
@@ -601,24 +1530,9 @@
           return;
         }
         lastResponse = data;
-        document.getElementById('results').classList.add('visible');
-        const n = (data.table && data.table.length) ? data.table.length - 1 : 0;
-        document.getElementById('meta').innerHTML =
-          '<strong>' + n + ' active participants</strong> · ' + data.time_label + ' · Generated ' + data.run_timestamp;
-        renderTable(data.table || []);
-        const plotContainer = document.getElementById('plotContainer');
-        if (data.plot_base64) {
-          plotContainer.innerHTML = '';
-          plotContainer.classList.remove('empty-state');
-          const img = document.createElement('img');
-          img.src = 'data:image/png;base64,' + data.plot_base64;
-          img.alt = 'Report chart';
-          plotContainer.appendChild(img);
-        } else {
-          plotContainer.classList.add('empty-state');
-          plotContainer.innerHTML = 'Chart not available.';
-        }
-        showMessage('Report ready. Download CSV or chart below.', 'success');
+        applyReportData(data);
+        showReportSuccess();
+        saveReportToSession();
       } catch (e) {
         let msg = e.message || 'Request failed';
         if (msg === 'Failed to fetch' || msg.includes('fetch')) {
@@ -634,20 +1548,7 @@
       }
     });
 
-    document.getElementById('downloadCsvBtn').addEventListener('click', () => {
-      if (!lastResponse || !lastResponse.table) return;
-      const csv = tableToCsv(lastResponse.table);
-      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
-      downloadBlob(blob, lastResponse.csv_filename || 'report.csv');
-    });
-    document.getElementById('downloadPlotBtn').addEventListener('click', () => {
-      if (!lastResponse || !lastResponse.plot_base64) return;
-      const bin = atob(lastResponse.plot_base64);
-      const arr = new Uint8Array(bin.length);
-      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-      const blob = new Blob([arr], { type: 'image/png' });
-      downloadBlob(blob, lastResponse.plot_filename || 'report.png');
-    });
+    restoreReportFromSession();
   </script>
 </body>
 </html>

@@ -46,7 +46,57 @@ COLLECTION_TIMESTAMP_UNITS = {
 }
 # Report column order and display names: location / ENMO / surveys / logs / batteries
 REPORT_COLLECTIONS = ["userlocations", "userenmos", "surveys", "userlogs", "userbatteries"]
-REPORT_COL_LABELS = {"userlocations": "location", "userenmos": "ENMO", "surveys": "surveys", "userlogs": "logs", "userbatteries": "batteries"}
+REPORT_COL_LABELS = {
+    "userlocations": "location",
+    "userenmos": "ENMO",
+    "surveys": "submitted survey",
+    "userlogs": "logs",
+    "log_disconnects": "wristband disconnects",
+    "log_data_collection_disabled": "data collection disabled",
+    "log_survey_expired": "activity survey expired",
+    "log_pa_denied": "PA survey denied",
+    "log_pa_ema_notifications": "PA/EMA notifications arrived",
+    "log_daily_timed_ema": "daily timed EMA",
+    "userbatteries": "batteries",
+    "battery_alerts_left": "left wristband, below 20% battery alerts",
+    "left_wristband_mac": "left wristband MAC",
+    "battery_alerts_right": "right wristband, below 20% battery alerts",
+    "right_wristband_mac": "right wristband MAC",
+    "phone_id": "phone ID",
+    "phone_battery_alerts": "phone battery below 10% alerts",
+    "red_flag_1h_low_wristband": "Red flag (1h low wristband 9AM–10PM)",
+    "non_wear_episodes": "Non-wear episodes (≥60 min low ENMO)",
+}
+# Column order: fixed columns first, then user-customizable (show/hide in UI)
+# Fixed: Red flag, location, ENMO, submitted survey, activity survey expired, PA survey denied,
+#       batteries, battery alerts left/right, phone battery alerts
+# Customizable (user can show/hide after table is created): left/right wristband MAC, phone ID,
+#       wristband disconnects, data collection disabled, logs
+REPORT_DISPLAY_ORDER = [
+    "red_flag_1h_low_wristband",
+    "non_wear_episodes",
+    "userlocations", "userenmos", "surveys",
+    "log_survey_expired", "log_pa_denied", "log_pa_ema_notifications", "log_daily_timed_ema",
+    "userbatteries",
+    "battery_alerts_left", "battery_alerts_right", "phone_battery_alerts",
+    "left_wristband_mac", "right_wristband_mac", "phone_id",
+    "log_disconnects", "log_data_collection_disabled", "userlogs",
+]
+# Battery alert threshold: left/right wristband level below this (%) counts as alert (from userbatteries)
+BATTERY_ALERT_THRESHOLD = 20
+# Phone battery alert threshold (%)
+PHONE_BATTERY_ALERT_THRESHOLD = 10
+# Red flag: low wristband battery for 1h continuously between 9:00 and 22:00 local
+RED_FLAG_WINDOW_START_HOUR = 9   # 9:00 AM
+RED_FLAG_WINDOW_END_HOUR = 22    # 10:00 PM (exclusive)
+RED_FLAG_MIN_DURATION_SEC = 3600  # 1 hour
+RED_FLAG_MAX_GAP_SEC = 1500      # 25 min max gap between records to count as same run
+
+# Non-wear detection from userenmos (active ENMO): 1-min average, inactive if mean < threshold
+ENMO_NONWEAR_THRESHOLD_G = 0.01   # 10 mg; minute is "inactive" if mean ENMO < this (g)
+ENMO_NONWEAR_MIN_CONSECUTIVE = 60  # flag non-wear if >= 60 consecutive inactive minutes
+ENMO_NONWEAR_MAX_SPIKE_MINUTES = 2  # allow up to 2 consecutive active minutes without resetting counter
+ENMO_FIELD = "floatingPointValue"  # field name in userenmos for ENMO value (g)
 
 QUERIES = [
     {
@@ -119,6 +169,13 @@ def _apply_time_filter(q):
     return filter_, since_sec
 
 
+# Chart color palette (teal/slate theme)
+_PLOT_COLORS = ["#0f766e", "#0d9488", "#14b8a6", "#2dd4bf", "#5eead4"]
+_PLOT_SINGLE = "#0f766e"
+_PLOT_GRID = "#e2e8f0"
+_PLOT_FACE = "#fafbfc"
+
+
 def _style_figure():
     """Apply professional styling to matplotlib figures."""
     plt.rcParams.update({
@@ -131,9 +188,12 @@ def _style_figure():
         "ytick.labelsize": 9,
         "axes.spines.top": False,
         "axes.spines.right": False,
+        "axes.facecolor": _PLOT_FACE,
+        "figure.facecolor": "white",
         "axes.grid": True,
         "axes.axisbelow": True,
-        "grid.alpha": 0.4,
+        "grid.alpha": 0.6,
+        "grid.color": _PLOT_GRID,
         "grid.linestyle": "-",
     })
 
@@ -172,8 +232,16 @@ def _plot_daily_report(participant_ids, collection_names, table, col_labels=None
     print(f"  Plot saved: {out_path.absolute()}")
 
 
-def _plot_daily_report_to_bytes(participant_ids, collection_names, table, col_labels=None, time_label="last 24h", out_basename="report"):
-    """Same as _plot_daily_report but returns (png_bytes, filename_stem) for web server."""
+def _plot_daily_report_to_bytes(
+    participant_ids,
+    collection_names,
+    table,
+    col_labels=None,
+    time_label="last 24h",
+    out_basename="report",
+    plot_type="bar",
+):
+    """Generate chart as PNG bytes. plot_type: 'bar' | 'line' | 'area' | 'horizontal_bar' | 'stacked'."""
     if not _HAS_MATPLOTLIB:
         return None, out_basename
     import io
@@ -183,22 +251,66 @@ def _plot_daily_report_to_bytes(participant_ids, collection_names, table, col_la
     n_c = len(collection_names)
     if n_p == 0 or n_c == 0:
         return None, out_basename
-    fig, axes = plt.subplots(n_c, 1, figsize=(max(10, n_p * 0.45), 2.75 * n_c), sharex=False)
-    if n_c == 1:
-        axes = [axes]
+    plot_type = (plot_type or "bar").strip().lower()
+    if plot_type not in ("bar", "line", "area", "horizontal_bar", "stacked"):
+        plot_type = "bar"
+
     x = np.arange(n_p)
-    bar_color = "#0f766e"
-    bar_edge = "#ffffff"
-    for j, (coll, ax) in enumerate(zip(collection_names, axes)):
-        counts = [table.get(pid, {}).get(coll, 0) for pid in participant_ids]
-        ax.bar(x, counts, color=bar_color, edgecolor=bar_edge, linewidth=0.8)
-        ax.set_ylabel("Count", fontweight=500)
-        ax.set_title(col_labels.get(coll, coll), fontweight=600, pad=8)
+    labels = [str(pid) for pid in participant_ids]
+    colors = _PLOT_COLORS[:n_c] if n_c <= len(_PLOT_COLORS) else plt.cm.viridis(np.linspace(0.2, 0.8, n_c))
+
+    if plot_type == "horizontal_bar":
+        fig, axes = plt.subplots(1, n_c, figsize=(4 * n_c, max(6, n_p * 0.28)), sharey=True)
+        if n_c == 1:
+            axes = [axes]
+        for j, (coll, ax) in enumerate(zip(collection_names, axes)):
+            counts = [table.get(pid, {}).get(coll, 0) for pid in participant_ids]
+            y_pos = np.arange(n_p)
+            bars = ax.barh(y_pos, counts, color=colors[j] if n_c > 1 else _PLOT_SINGLE, height=0.7, edgecolor="white", linewidth=0.8)
+            ax.set_xlabel("Count", fontweight=500)
+            ax.set_title(col_labels.get(coll, coll), fontweight=600, pad=8)
+            ax.set_yticks(y_pos)
+            ax.set_yticklabels(labels, fontsize=9)
+            ax.set_ylim(n_p - 0.5, -0.5)
+            ax.set_xlim(0, max(max(counts) * 1.05, 1) if counts else 1)
+        fig.suptitle(f"Activity by participant ({time_label})", fontsize=13, fontweight=600, y=1.02)
+    elif plot_type == "stacked":
+        fig, ax = plt.subplots(1, 1, figsize=(max(10, n_p * 0.5), 5))
+        bottom = np.zeros(n_p)
+        for j, coll in enumerate(collection_names):
+            counts = np.array([table.get(pid, {}).get(coll, 0) for pid in participant_ids])
+            ax.bar(x, counts, bottom=bottom, label=col_labels.get(coll, coll), color=colors[j], edgecolor="white", linewidth=0.6)
+            bottom += counts
+        ax.set_ylabel("Count (stacked)", fontweight=500)
+        ax.set_xlabel("Participant", fontweight=500)
         ax.set_xticks(x)
-        ax.set_xticklabels([str(pid) for pid in participant_ids], rotation=45, ha="right", fontsize=9)
+        ax.set_xticklabels(labels, rotation=45, ha="right", fontsize=9)
+        ax.legend(loc="upper right", frameon=True, fancybox=False, edgecolor=_PLOT_GRID, fontsize=9)
         ax.set_xlim(-0.5, n_p - 0.5)
-        ax.set_ylim(0, max(max(counts) * 1.05, 1) if counts else 1)
-    fig.suptitle(f"Active participants ({time_label}) — counts per collection (each panel has its own scale)", fontsize=12, fontweight=600, y=1.02)
+        ax.set_ylim(0, max(bottom) * 1.05 if n_p else 1)
+        fig.suptitle(f"Activity by participant ({time_label}) — stacked by collection", fontsize=13, fontweight=600, y=1.02)
+    else:
+        fig, axes = plt.subplots(n_c, 1, figsize=(max(10, n_p * 0.45), 2.8 * n_c), sharex=False)
+        if n_c == 1:
+            axes = [axes]
+        for j, (coll, ax) in enumerate(zip(collection_names, axes)):
+            counts = [table.get(pid, {}).get(coll, 0) for pid in participant_ids]
+            if plot_type == "line":
+                ax.plot(x, counts, color=_PLOT_SINGLE, linewidth=2.5, marker="o", markersize=5, markerfacecolor="white", markeredgecolor=_PLOT_SINGLE, markeredgewidth=1.5)
+            elif plot_type == "area":
+                ax.fill_between(x, counts, alpha=0.6, color=_PLOT_SINGLE)
+                ax.plot(x, counts, color=_PLOT_SINGLE, linewidth=1.5)
+            else:
+                ax.bar(x, counts, color=_PLOT_SINGLE, edgecolor="white", linewidth=0.8)
+            ax.set_ylabel("Count", fontweight=500)
+            ax.set_title(col_labels.get(coll, coll), fontweight=600, pad=8)
+            ax.set_xticks(x)
+            ax.set_xticklabels(labels, rotation=45, ha="right", fontsize=9)
+            ax.set_xlim(-0.5, n_p - 0.5)
+            y_max = max(counts) * 1.05 if counts else 1
+            ax.set_ylim(0, max(y_max, 1))
+        fig.suptitle(f"Active participants ({time_label}) — counts per collection", fontsize=13, fontweight=600, y=1.02)
+
     plt.tight_layout()
     buf = io.BytesIO()
     plt.savefig(buf, format="png", dpi=150, bbox_inches="tight", facecolor="white")
@@ -314,6 +426,7 @@ def run_query(client, q, db_name=None):
             # Step 1: Active participants = distinct participantID per collection in TW, merged
             active_ids = set()
             for coll_name in collections:
+                print(f"  Getting participants from {coll_name}...", flush=True)
                 coll = db[coll_name]
                 coll_filter = _get_filter_for_collection(q, coll_name)
                 active_ids.update(coll.distinct(key, coll_filter))
@@ -321,6 +434,7 @@ def run_query(client, q, db_name=None):
             # Step 2: Counts per participant per collection (restricted to TW)
             table = {}
             for coll_name in collections:
+                print(f"  Counting {coll_name}...", flush=True)
                 coll = db[coll_name]
                 coll_filter = _get_filter_for_collection(q, coll_name)
                 for doc in coll.aggregate([

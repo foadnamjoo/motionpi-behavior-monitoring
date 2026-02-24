@@ -14,6 +14,7 @@ ssh_config
 
 # Python
 venv/
+venv_intel/
 .venv/
 env/
 __pycache__/
@@ -28,6 +29,7 @@ build/
 
 # Build artifacts
 MotionPI_Report_Mac.zip
+MotionPI_Report_Mac_Intel.zip
 
 # Generated reports
 daily_report_24h.png

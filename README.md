@@ -7,6 +7,8 @@ MongoDB-backed report for active participants: table and charts by data source (
 - **CLI**: Run queries from the terminal (`python mongodb_query.py`).
 - **Web report**: HTML app + Flask server — choose time window, run report, view table and chart, download CSV and PNG.
 - **Standalone HTML**: Share the HTML file; users enter the report server URL and run reports without installing Python.
+- **Log-event columns**: When Logs is selected, the report includes counts for wristband disconnects, data collection disabled, activity survey expired, and PA survey denied to support compliance monitoring.
+- **Help page**: In-app Help (link in header) explains how to use the report, defines all terms, summarizes log events, and gives MongoDB query examples. A separate **Log Event Documentation** document (created for users) describes every event name and how to query them in MongoDB Compass.
 
 ## Setup
 
@@ -88,9 +90,28 @@ You can build a single app that starts the server and opens the browser so users
    ```
    This produces **`MotionPI_Report_Mac.zip`** containing the app and `config.env`. Replace the placeholder `MONGODB_URI` in `config.env` with your real connection string before sending the zip to users (or have users set it). Users unzip, then double-click **MotionPI Report** (keep `config.env` in the same folder). No Python on their machine; data comes from your MongoDB.
 
-5. **Distribute**
-   - **With zip**: Send `MotionPI_Report_Mac.zip`; users unzip and run **MotionPI Report** (ensure `config.env` has the correct `MONGODB_URI` for your deployment).
-   - **Without zip**: Give users the executable and a `.env` with `MONGODB_URI=...` in the same folder. They double-click; no terminal or Python required. To stop the server they quit the app (Activity Monitor / Task Manager).
+5. **Distribute — what to send to users**
+   - **Build the zip** (from project root):
+     ```bash
+     ./build_and_zip.sh
+     ```
+     This creates **`MotionPI_Report_Mac.zip`** in the project root (for **Apple Silicon** M1/M2/M3 Macs).
+   - **Intel Macs (e.g. 2019 MacBook Pro)** get “bad CPU type in executable” with that zip. Build an Intel version on your Apple Silicon Mac:
+     ```bash
+     ./build_intel.sh
+     ```
+     This creates **`MotionPI_Report_Mac_Intel.zip`**. Send that to Intel Mac users. (Requires Rosetta 2 and `arch -x86_64 python3`; see the script if the venv fails.)
+   - **Before sending**: Open `dist/config.env` (or edit before zipping) and set **`MONGODB_URI`** to your MongoDB connection string so the report can read data. Do not commit this file with real credentials.
+   - **Send to users**: **`MotionPI_Report_Mac.zip`** for Apple Silicon, **`MotionPI_Report_Mac_Intel.zip`** for Intel Macs (or the contents of `dist/`: **MotionPI Report**, **config.env**, **README.txt**).
+   - **User steps**: (1) Unzip the folder. (2) Keep **config.env** in the same folder as **MotionPI Report**. (3) Double-click **MotionPI Report**; the browser opens to the report. (4) Use the report (time range, data sources, Run report, download from the green message bar). (5) Click **Help** in the header for the help page. No Python or terminal needed; to stop, quit the app.
+   - **Without zip**: Give users the **MotionPI Report** executable and **config.env** (with `MONGODB_URI=...`) in the same folder. They double-click; to stop the server they quit the app (Activity Monitor / Task Manager).
+
+## Verification before sending the zip
+
+- [ ] Run `./build_and_zip.sh` (clean build includes `report_app.html` and `help.html`).
+- [ ] Set `MONGODB_URI` in `dist/config.env` (or in `env.dist` before building). Do not commit real credentials.
+- [ ] Unzip `MotionPI_Report_Mac.zip` in a test folder, keep **config.env** next to **MotionPI Report**, double-click the app.
+- [ ] In the browser: run a report, open **Help** (top-right), use **Back to Report**, download CSV/chart from the green message bar. Then quit the app.
 
 ## Project structure
 
@@ -101,9 +122,10 @@ You can build a single app that starts the server and opens the browser so users
 | `report_app.html`       | Single-page report UI (table, chart, CSV/PNG download) |
 | `launch_report_app.py`  | Launcher: starts server and opens browser (entry point for packaged app) |
 | `MotionPI_Report.spec`  | PyInstaller spec for the packaged app |
-| `env.dist`             | `.env` / config template (used by `build_and_zip.sh` in the zip) |
-| `build_and_zip.sh`     | Builds app and zips it with `.env` for distribution |
-| `.env`                  | MongoDB URI (create from `.env.example`, do not commit) |
+| `env.dist`             | Config template copied as `config.env` in the zip (set `MONGODB_URI` before sending) |
+| `build_and_zip.sh`     | Builds app (Apple Silicon) and zips it with `config.env` and `README.txt` |
+| `build_intel.sh`       | Builds app for Intel (x86_64) Macs; produces `MotionPI_Report_Mac_Intel.zip` |
+| `.env`                  | MongoDB URI for local run (create from `.env.example`; do not commit) |
 | `requirements.txt`     | Python dependencies |
 | `requirements-build.txt` | Same + PyInstaller (for building the app) |
 

@@ -6,8 +6,8 @@ import sys
 
 block_cipher = None
 
-# Data files to bundle (report_app.html must be at _MEIPASS root for send_file)
-datas = [('report_app.html', '.')]
+# Data files to bundle (HTML and assets at _MEIPASS root for send_file)
+datas = [('report_app.html', '.'), ('help.html', '.'), ('cat-loader.png', '.')]
 
 # Modules PyInstaller may not detect
 hiddenimports = [

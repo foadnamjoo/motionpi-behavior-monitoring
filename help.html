@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Help — MotionPI Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f9fafb;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #111827;
+      --text-secondary: #374151;
+      --text-muted: #6b7280;
+      --primary: #1557b0;
+      --primary-hover: #124a96;
+      --radius: 6px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    .app { width: 100%; max-width: none; margin: 0; padding: 0 16px 48px; }
+    .header {
+      background: var(--surface);
+      padding: 24px 0;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .header .header-left { flex: 1; min-width: 0; }
+    .header h1 { font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .header .back-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary);
+      background: #eff6ff;
+      border: 1px solid var(--primary);
+      border-radius: var(--radius);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .header .back-link:hover { background: var(--primary); color: var(--surface); }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .card h2 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .card h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin: 16px 0 8px 0;
+    }
+    .card h3:first-of-type { margin-top: 0; }
+    .card p { margin-bottom: 12px; color: var(--text); }
+    .help-list, .event-list { margin: 12px 0 20px 0; padding-left: 20px; }
+    .help-list li, .event-list li { margin-bottom: 6px; }
+    dl.terms { margin: 12px 0 0 0; }
+    dl.terms dt {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-top: 12px;
+      margin-bottom: 4px;
+    }
+    dl.terms dt:first-child { margin-top: 0; }
+    dl.terms dd { font-size: 14px; margin-left: 0; color: var(--text-secondary); margin-bottom: 4px; line-height: 1.5; }
+    .note {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    code {
+      font-family: ui-monospace, monospace;
+      font-size: 13px;
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-left">
+        <h1>Help — MotionPI Report</h1>
+      </div>
+      <a href="report_app.html" class="back-link">← Back to Report</a>
+    </header>
+
+    <section class="card">
+      <h2>How to use the report</h2>
+      <h3>1. Choose data sources</h3>
+      <p>Under <strong>Data collection sources</strong>, check the types of data you want in the report:</p>
+      <ul class="help-list">
+        <li><strong>Locations</strong> — GPS/location records</li>
+        <li><strong>ENMO</strong> — Activity/motion (accelerometer) records</li>
+        <li><strong>Surveys</strong> — Survey responses</li>
+        <li><strong>Logs</strong> — App log entries (and log-event columns such as disconnects, survey expired, PA/EMA notifications)</li>
+        <li><strong>Batteries</strong> — Battery level records for wristbands and phone (adds battery alert columns and Red flag when selected)</li>
+      </ul>
+      <p>Only selected sources appear as columns. Red flag, wristband MACs, phone ID, and battery alert columns are included automatically when relevant; you control their visibility with <strong>Show/hide columns</strong> after the report runs (see below).</p>
+
+      <h3>2. Set the time range</h3>
+      <p>Choose <strong>Preset</strong> (e.g. Last 24 hours, Last 7 days) or <strong>Custom range</strong> and pick start and end date/time. The report only includes data within this window.</p>
+
+      <h3>3. Choose chart type</h3>
+      <p>Under <strong>Chart type</strong>, pick how the activity summary is drawn:</p>
+      <ul class="help-list">
+        <li><strong>Stacked bar</strong> (default) — One bar per participant with all collections stacked. You can <strong>click a legend item</strong> to show or hide that layer in the same chart.</li>
+        <li><strong>Bar chart</strong> — One panel per collection (location, ENMO, surveys, etc.), each with its own scale.</li>
+        <li><strong>Horizontal bar</strong> — Participants on the Y-axis; useful when there are many participants.</li>
+      </ul>
+
+      <h3>4. Run the report</h3>
+      <p>Click <strong>Run report</strong>. The app queries the database and may take from a few seconds up to several minutes. When it finishes, the <strong>Results</strong> section shows, in order: a quick summary line, the <strong>activity chart</strong>, then <strong>Show/hide columns</strong>, then the <strong>table</strong>.</p>
+
+      <h3>5. Results: chart first, then table</h3>
+      <p><strong>Activity summary (chart)</strong> appears first. For <strong>Stacked bar</strong>: click a label in the legend to add or remove that collection from the chart—hidden layers disappear from the plot and from the legend’s drawn list (no strikethrough). The chart updates immediately. This lets you focus on specific data types (e.g. only location and ENMO) without re-running the report.</p>
+      <p><strong>Show/hide columns</strong> sits right below the chart and above the table. Only columns that exist in your report are listed. <strong>Check</strong> a box to show that column in the table; <strong>uncheck</strong> to hide it. The table and CSV export both use only the columns you leave checked.</p>
+      <p><strong>Table:</strong> You can <strong>drag a column header</strong> to move that column left or right. Drop it between two columns to reorder. This helps compare columns side by side. <strong>participantID</strong> is always the first column. Hover over any header to see a short explanation (tooltip).</p>
+      <p>Use <strong>Download CSV</strong> to export the table (only visible columns and in the order you see). Use <strong>Download chart</strong> to save the chart as a PNG: for the stacked bar, the image shows exactly what you see on screen—only the layers that are currently visible, and the legend lists only those (no crossed-out items).</p>
+    </section>
+
+    <section class="card">
+      <h2>Understanding log events</h2>
+      <p>When <strong>Logs</strong> is selected, the report uses the <strong>userlogs</strong> collection. Each log record has an <code>eventName</code>, <code>timestamp</code>, <code>participantID</code>, and often <code>phoneID</code>, <code>wristbandMAC</code>, and <code>saltLakeCityTime</code>. The report shows total log count plus counts for key events:</p>
+      <ul class="event-list">
+        <li><strong>Wristband connectivity:</strong> <code>connect-wristband-to-app</code>, <code>disconnect-wristband-to-app</code></li>
+        <li><strong>Survey / PA-EMA:</strong> <code>PA_EMA_new-notification</code> (notifications delivered to phone), <code>Activity Survey Expired</code>, <code>PA_denied</code>, <code>morning_survey_trigger</code>, <code>afternoon_survey_trigger</code>, <code>evening_survey_trigger</code> (daily timed EMA)</li>
+        <li><strong>Data collection:</strong> <code>Data Collection Enabled</code>, <code>Data Collection Disabled</code></li>
+        <li><strong>Battery:</strong> <code>low_battery_wristband_</code> + MAC address</li>
+        <li><strong>Dominant hand:</strong> <code>Dominant hand change to Left</code>, <code>Dominant hand change to Right</code></li>
+      </ul>
+      <p>Table columns derived from these include <strong>PA/EMA notifications arrived</strong> (count of <code>PA_EMA_new-notification</code>), <strong>daily timed EMA</strong> (sum of morning, afternoon, and evening survey triggers), <strong>wristband disconnects</strong>, <strong>data collection disabled</strong>, <strong>activity survey expired</strong>, and <strong>PA survey denied</strong>.</p>
+    </section>
+
+    <section class="card">
+      <h2>Monitoring participant compliance</h2>
+      <p>Use the report and log columns to spot possible misperformance or non-compliance:</p>
+      <ul class="help-list">
+        <li><strong>Red flag count</strong> — High or repeated 1h+ low wristband battery (9AM–10PM) suggests the wristband is not being charged.</li>
+        <li><strong>Battery alert counts</strong> — Many “below 20%” or “below 10%” records indicate charging is being ignored.</li>
+        <li><strong>Little or no data</strong> — Rows with 0 or very low counts (yellow in the table) may indicate a non-collector or device issues.</li>
+        <li><strong>Wristband disconnects</strong> — Frequent disconnects can mean pairing problems or the participant removing the device.</li>
+        <li><strong>Data collection disabled</strong> — Count of times collection was turned off; high count may reflect intentional disabling.</li>
+        <li><strong>Activity survey expired</strong> — Surveys that were not answered within 30 minutes; high count may indicate low engagement.</li>
+        <li><strong>PA survey denied</strong> — Participant answered “No” to the physical-activity prompt; useful for engagement patterns.</li>
+        <li><strong>PA/EMA notifications arrived</strong> — How many survey notifications were delivered to the phone; compare with submitted survey count to see response gaps.</li>
+        <li><strong>Daily timed EMA</strong> — Count of morning, afternoon, and evening survey triggers; reflects how often the app prompted the participant.</li>
+      </ul>
+      <p>For deeper analysis (e.g. by exact event name or time window), query <strong>userlogs</strong> in MongoDB Compass or another client.</p>
+      <div class="note">
+        <strong>Tip:</strong> Red-highlighted rows in the table indicate participants who had at least one “red flag” (wristband battery low for 1 hour or more between 9 AM and 10 PM). The table legend and column tooltips explain the rest.
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Metrics for publication</h2>
+      <p>After you run a report, the <strong>Study summary </strong> panel appears below the quick scan. It provides numbers you can use in the Methods or Results section of a paper. Use <strong>Download summary (CSV)</strong> or <strong>Download summary (JSON)</strong> to export a file with each metric, its value, and a short description.</p>
+      <h3>What each metric means</h3>
+      <dl class="terms">
+        <dt>n_participants</dt>
+        <dd>Number of participants with at least one record in the selected time window. Use in Methods: “Data from N participants were included.”</dd>
+        <dt>date_range</dt>
+        <dd>The report time window (e.g. “last 7 days” or “2026-02-01 00:00 to 2026-02-08 23:59 MST”). Use in Methods to state the analysis period.</dd>
+        <dt>response_rate_mean / response_rate_sd</dt>
+        <dd>Mean and standard deviation of per-participant EMA/survey response rate (submitted surveys ÷ triggers, e.g. daily timed EMA). Only participants with at least one trigger are included. Use in Results: “Response rate was M ± SD (mean ± SD per participant).”</dd>
+        <dt>response_rate_overall</dt>
+        <dd>Overall response rate: total submitted surveys ÷ total triggers in the window. Use in Results for a single aggregate compliance figure.</dd>
+        <dt>n_with_red_flag / pct_with_red_flag</dt>
+        <dd>Number and percent of participants with ≥1 red flag (wristband battery low for 1h+ between 9AM–10PM). Use in Results to describe data quality or charging behavior.</dd>
+        <dt>n_no_or_minimal_data / pct_no_or_minimal_data</dt>
+        <dd>Number and percent of participants with no location, ENMO, or survey records in the window. Use in Methods/Results to describe exclusion or missing data.</dd>
+        <dt>mean_* / sd_* (per collection)</dt>
+        <dd>Mean and SD of record counts per participant for each data collection (location, ENMO, surveys, logs, batteries). Use in Results to describe data volume or adherence (e.g. “Participants had a mean of M (SD = S) location records per day”).</dd>
+      </dl>
+      <div class="note">
+        <strong>Pipeline credit:</strong> The surveillance dashboard, compliance metrics, and study summary export were developed by <strong>Foad Namjoo</strong>, Kahlert School of Computing, University of Utah. When citing or describing the tool in a paper, please include this contribution (e.g. in Methods: “Compliance and summary metrics were generated using the MotionPI surveillance dashboard [developed by F. Namjoo, University of Utah]” or list in Software/Data curation in the author contributions).
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Glossary — terms used on screen</h2>
+      <h3>Report parameters</h3>
+      <dl class="terms">
+        <dt>Data collection sources</dt>
+        <dd>Which databases (locations, ENMO, surveys, logs, batteries) to include. Only selected sources appear as columns. Batteries adds battery alert columns and Red flag; Logs adds log-event columns.</dd>
+        <dt>Chart type</dt>
+        <dd>How the activity summary is drawn: <strong>Stacked bar</strong> (default; one bar per participant, click legend to show/hide layers), <strong>Bar chart</strong> (one panel per collection), or <strong>Horizontal bar</strong> (participants on Y-axis).</dd>
+        <dt>Time range / Preset / Custom range</dt>
+        <dd>The period of data to include. Preset uses fixed windows (e.g. last 7 days). Custom lets you pick exact start and end date and time.</dd>
+      </dl>
+      <h3>Results: chart and legend</h3>
+      <dl class="terms">
+        <dt>Activity summary (chart)</dt>
+        <dd>The chart appears first in results. For Stacked bar: each legend item is one collection (location, ENMO, surveys, etc.). <strong>Click a legend item</strong> to hide that layer; click again to show it. The chart redraws with only the visible layers. Hidden items are removed from the legend in the on-screen chart.</dd>
+        <dt>Legend (stacked bar)</dt>
+        <dd>Labels at the top of the stacked bar chart. Click to toggle that collection on or off. When you <strong>Download chart</strong>, the PNG shows only the layers you left visible and the legend lists only those (no strikethrough).</dd>
+      </dl>
+      <h3>Show/hide columns and table</h3>
+      <dl class="terms">
+        <dt>Show/hide columns</dt>
+        <dd>Row of checkboxes below the chart and above the table. Only columns that exist in your report are listed. <strong>Check</strong> = column visible in the table; <strong>uncheck</strong> = column hidden. Table and CSV export use only the visible columns and their current order.</dd>
+        <dt>Drag to reorder columns</dt>
+        <dd>Grab a column header and drag it left or right. Drop between two columns to reorder. Helps compare columns. participantID stays first.</dd>
+      </dl>
+      <h3>Table columns</h3>
+      <dl class="terms">
+        <dt>participantID</dt>
+        <dd>Unique identifier for each participant. Always the first column.</dd>
+        <dt>Red flag (1h low wristband 9AM–10PM)</dt>
+        <dd>Number of times the participant had a wristband battery below 20% for at least 1 hour between 9 AM and 10 PM. Rows with count &gt; 0 are highlighted in red.</dd>
+        <dt>left wristband MAC / right wristband MAC</dt>
+        <dd>Hardware address of the wristband device. Shown when battery data is included; toggle visibility via Show/hide columns.</dd>
+        <dt>phone ID</dt>
+        <dd>Identifier of the participant’s phone (last 4 characters). Toggle via Show/hide columns.</dd>
+        <dt>location / ENMO / submitted survey / logs / batteries</dt>
+        <dd>Counts of records in the selected time range for that participant.</dd>
+        <dt>PA/EMA notifications arrived</dt>
+        <dd>Count of <code>PA_EMA_new-notification</code> events (survey notifications delivered to the phone).</dd>
+        <dt>daily timed EMA</dt>
+        <dd>Count of morning, afternoon, and evening survey triggers (<code>morning_survey_trigger</code>, <code>afternoon_survey_trigger</code>, <code>evening_survey_trigger</code>) in the time range.</dd>
+        <dt>wristband disconnects / data collection disabled / activity survey expired / PA survey denied</dt>
+        <dd>Counts of the corresponding log events. See <strong>Understanding log events</strong>.</dd>
+        <dt>Battery alert columns</dt>
+        <dd>Left/right wristband below 20% and phone below 10% alert counts. Visibility can be toggled in Show/hide columns.</dd>
+      </dl>
+      <h3>Downloads</h3>
+      <dl class="terms">
+        <dt>Download CSV</dt>
+        <dd>Exports the table using only the columns that are currently visible and in the order you see (including any drag-to-reorder).</dd>
+        <dt>Download chart</dt>
+        <dd>Saves the activity summary as a PNG. For the stacked bar, the image matches what you see: only the layers you left visible, and the legend lists only those (no crossed-out items). For bar and horizontal bar, saves the static chart image.</dd>
+        <dt>Study summary / Summary (CSV)</dt>
+        <dd>The study summary panel shows N participants, date range, response rate (mean ± SD and overall), N (%) with red flag, N (%) with no/minimal data, and mean (SD) records per participant per collection. Each statistic includes a short formula describing how it is calculated. <strong>Summary (CSV)</strong> downloads these metrics with descriptions for use in papers. See <strong>Metrics for publication</strong> above.</dd>
+      </dl>
+      <h3>Quick scan and table legend</h3>
+      <dl class="terms">
+        <dt>Quick scan</dt>
+        <dd>Summary line: number of participants, red-flagged, with little/no data, and with battery alerts.</dd>
+        <dt>How to read (table legend)</dt>
+        <dd>Explains row colors: 0 or empty (possible non-collector), Red flag (wristband low 1h+ 9AM–10PM), Battery alerts. Also notes that you can drag column headers to reorder.</dd>
+      </dl>
+      <p style="margin-top: 24px;"><a href="report_app.html" class="back-link" style="display: inline-flex;">← Back to Report</a></p>
+    </section>
+  </div>
+</body>
+</html>
