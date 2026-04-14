@@ -869,19 +869,19 @@
 
     <section class="card ssh-guide">
       <details>
-        <summary>CHPC Connection Guide (Mac)</summary>
+        <summary>SSH Tunnel Guide (Mac)</summary>
         <div class="guide-body">
           <p>Use this one-time tunnel setup each session, then run the report.</p>
           <div class="guide-quick">Quick check: keep your SSH tunnel terminal open while using this page.</div>
           <ol>
             <li>Open Terminal.</li>
-            <li>Run this command (replace with your uNID):
-              <code>ssh -J YOUR_UNID@YOUR_BASTION_HOST -L 27017:127.0.0.1:27017 YOUR_UNID@YOUR_DB_HOST</code>
+            <li>Run this command (replace placeholders with your internal hosts/usernames):
+              <code>ssh -J YOUR_USER@YOUR_BASTION_HOST -L 27017:127.0.0.1:27017 YOUR_USER@YOUR_DB_HOST</code>
             </li>
-            <li>Complete login: Redwood password, Duo approval, then motionpi password.</li>
+            <li>Complete your organization's authentication flow (password/MFA as required).</li>
             <li>Leave the terminal open and return here to click <strong>Run report</strong>.</li>
           </ol>
-          <p class="guide-tip">Tip: You are connected when you see a prompt like <strong>[your_uNID@motionpi:~]$</strong>.</p>
+          <p class="guide-tip">Tip: You are connected when you see a remote shell prompt like <strong>[your_user@your_db_host ~]$</strong>.</p>
           <p class="guide-note">If report shows "Could not reach the report server", start local server first (`python report_server.py`) and check your tunnel.</p>
         </div>
       </details>

@@ -30,7 +30,8 @@ You need a **x86_64** Python (running under Rosetta). Example:
 ### Option C: Run from Python (no app build)
 On the Intel Mac, they can run the report **without** the packaged app:
 1. Install Python 3, then: `pip install -r requirements.txt`
-2. Copy the project folder (or clone the repo). Put `config.env` in the folder with `MONGODB_URI=mongodb://YOUR_DB_HOST:27017`.
+2. Copy the project folder (or clone the repo). Put `config.env` in the folder with a valid URI, for example:
+   `MONGODB_URI=mongodb://admin:YOUR_MONGODB_PASSWORD@127.0.0.1:27017/?authSource=admin&directConnection=true`
 3. Run: `python launch_report_app.py` (or `python report_server.py` and open http://127.0.0.1:5050 in the browser).
 
 This works on any Mac (Intel or Apple Silicon) and avoids the “bad CPU type” issue.
