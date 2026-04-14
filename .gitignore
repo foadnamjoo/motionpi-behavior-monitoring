@@ -11,6 +11,8 @@ id_ed25519
 *token*
 *.secret
 ssh_config
+MotionPI_Report_log.txt
+*.log
 
 # Python
 venv/

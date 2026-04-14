@@ -66,6 +66,11 @@ PORT = int(os.environ.get("REPORT_PORT", "5050"))
 CORS_ORIGIN = os.environ.get("CORS_ORIGIN", "").strip()  # If set, allow this origin (e.g. * or https://app.example.com)
 REPORT_API_KEY = os.environ.get("REPORT_API_KEY", "").strip()  # If set, require X-API-Key header
 
+DB_CONNECT_ERROR_MSG = (
+    "Could not connect to the database. Check MONGODB_URI in .env (local run) or config.env "
+    "(packaged app), and confirm MongoDB/SSH tunnel is running."
+)
+
 
 def _check_api_key():
     if not REPORT_API_KEY:
@@ -679,7 +684,7 @@ def api_report():
         )
     except (ServerSelectionTimeoutError, ConnectionFailure) as e:
         return jsonify({
-            "error": "Could not connect to the database. Check that config.env has the correct MONGODB_URI and that MongoDB (or your SSH tunnel) is running.",
+            "error": DB_CONNECT_ERROR_MSG,
             "detail": str(e),
         }), 503
     except Exception as e:
@@ -687,7 +692,7 @@ def api_report():
         # Fallback: treat connection-refused / timeout as 503 (frozen app may raise different type)
         if "Connection refused" in err_msg or "ServerSelectionTimeoutError" in type(e).__name__ or "ConnectionFailure" in type(e).__name__:
             return jsonify({
-                "error": "Could not connect to the database. Check that config.env has the correct MONGODB_URI and that MongoDB (or your SSH tunnel) is running.",
+                "error": DB_CONNECT_ERROR_MSG,
                 "detail": err_msg,
             }), 503
         traceback.print_exc()
