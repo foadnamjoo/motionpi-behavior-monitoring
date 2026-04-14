@@ -150,22 +150,28 @@
       border-left: 4px solid var(--accent);
       background: linear-gradient(180deg, #f8fbff 0%, #f1f8ff 100%);
     }
-    .ssh-guide h2 { margin-bottom: 0; }
+    .ssh-guide h2 { margin-bottom: 0; font-size: 0.95rem; }
+    .ssh-guide .main-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
     .ssh-guide details.main-guide > summary {
       list-style: none;
       cursor: pointer;
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
       margin: -28px -28px 0 -28px;
       padding: 16px 20px;
       border-bottom: 1px solid var(--border-light);
       background: linear-gradient(180deg, #f8fafc 0%, #edf4ff 100%);
+      width: calc(100% + 56px);
     }
     .ssh-guide details.main-guide > summary::-webkit-details-marker { display: none; }
     .ssh-guide details.main-guide > summary::after {
-      content: 'Show';
+      content: 'Show guide';
       font-size: 12px;
       font-weight: 700;
       color: var(--primary);
@@ -175,18 +181,29 @@
       padding: 2px 10px;
       white-space: nowrap;
     }
-    .ssh-guide details.main-guide[open] > summary::after { content: 'Hide'; }
+    .ssh-guide details.main-guide[open] > summary::after { content: 'Hide guide'; }
     .ssh-guide .main-guide-content {
-      padding-top: 14px;
+      padding-top: 10px;
     }
     .ssh-guide .guide-intro {
       font-size: 13px;
       color: var(--text-secondary);
-      margin-bottom: 12px;
+      margin-bottom: 8px;
+    }
+    .ssh-guide .guide-quick {
+      margin-bottom: 8px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border-light);
+      background: #f8fafc;
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.4;
     }
     .ssh-guide .guide-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 10px;
       margin-bottom: 10px;
     }
@@ -210,7 +227,7 @@
       border-bottom: 1px solid var(--border-light);
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       gap: 10px;
     }
     .ssh-guide summary::-webkit-details-marker { display: none; }
@@ -224,6 +241,7 @@
       border-radius: 999px;
       padding: 2px 8px;
       white-space: nowrap;
+      margin-left: 8px;
     }
     .ssh-guide details[open] summary::after { content: 'Hide steps'; }
     .ssh-guide .guide-content {
@@ -246,15 +264,6 @@
       font-size: 11px;
       line-height: 1.45;
       word-break: break-all;
-    }
-    .ssh-guide .guide-ok {
-      padding: 8px 10px;
-      border-radius: var(--radius);
-      background: #ecfdf5;
-      border: 1px solid #bbf7d0;
-      color: #166534;
-      font-size: 12px;
-      margin-bottom: 8px;
     }
     .ssh-guide .guide-note {
       font-size: 11px;
@@ -913,13 +922,16 @@
     <section class="card ssh-guide">
       <details class="main-guide">
         <summary>
-          <h2>Before Running Report: Connect to CHPC Database</h2>
+          <div class="main-title-wrap">
+            <h2>CHPC Connection Guide</h2>
+          </div>
         </summary>
         <div class="main-guide-content">
           <p class="guide-intro">Use this one-time tunnel setup each session. Keep the tunnel terminal open, then return here and click <strong>Run report</strong>.</p>
+          <div class="guide-quick"><strong>Quick check:</strong> Keep your SSH tunnel terminal open while using the report page.</div>
           <div class="guide-grid">
             <div class="guide-box">
-              <details>
+              <details class="platform-guide" id="macGuide">
                 <summary>Mac (Terminal)</summary>
                 <div class="guide-content">
                   <ol>
@@ -934,24 +946,7 @@
                 </div>
               </details>
             </div>
-            <div class="guide-box">
-              <details>
-                <summary>Windows (PuTTY / plink)</summary>
-                <div class="guide-content">
-                  <ol>
-                    <li>Open Command Prompt on Narwhal/approved host.</li>
-                    <li>Run:
-                      <code>plink.exe -ssh -L 27017:127.0.0.1:27017 YOUR_UNID@YOUR_DB_HOST</code>
-                    </li>
-                    <li>Accept host key prompt (first time), then sign in.</li>
-                    <li>Keep this window open while using the report.</li>
-                  </ol>
-                  <p class="guide-small-note">If needed, ask your admin for the jump-host version via Redwood.</p>
-                </div>
-              </details>
-            </div>
           </div>
-          <div class="guide-ok"><strong>Connected successfully</strong> when your terminal stays logged in and this page can run reports without connection errors.</div>
           <p class="guide-note">If report shows "Could not reach the report server", start the local server first (`python report_server.py`) and make sure your SSH tunnel is still active.</p>
         </div>
       </details>
