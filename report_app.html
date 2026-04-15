@@ -410,6 +410,19 @@
     .results-section { display: none; }
     .results-section.visible { display: block; }
     .results-section { width: 100%; }
+    .results-section.running-overlay {
+      position: relative;
+    }
+    .results-section.running-overlay::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(100, 116, 139, 0.28);
+      backdrop-filter: grayscale(0.35);
+      pointer-events: none;
+      border-radius: var(--radius-lg);
+      z-index: 6;
+    }
     .results-section .card:first-of-type {
       border-top: 3px solid var(--primary);
     }
@@ -1137,46 +1150,10 @@
       el.style.display = 'none';
     }
 
-    function clearCurrentResultsForNewRun() {
-      lastResponse = null;
-      lastTableRows = null;
-      columnVisibility = {};
-      lastHeaderOrder = null;
-      const metaEl = document.getElementById('meta');
-      if (metaEl) metaEl.innerHTML = '';
-      const quickScanEl = document.getElementById('quickScan');
-      if (quickScanEl) {
-        quickScanEl.innerHTML = '';
-        quickScanEl.style.display = 'none';
-      }
-      const summaryEl = document.getElementById('studySummaryPanel');
-      if (summaryEl) {
-        summaryEl.innerHTML = '';
-        summaryEl.style.display = 'none';
-      }
-      const tableWrap = document.getElementById('tableWrapper');
-      if (tableWrap) tableWrap.innerHTML = '<p class="empty-state">Running report... previous results cleared.</p>';
-      const tableLegend = document.getElementById('tableLegend');
-      if (tableLegend) tableLegend.style.display = 'none';
-      const tableSectionHeader = document.querySelector('.table-section-header');
-      if (tableSectionHeader) tableSectionHeader.style.display = 'none';
-      const colVisibilityRow = document.getElementById('columnVisibilityRow');
-      if (colVisibilityRow) colVisibilityRow.style.display = 'none';
-      const colVisibilityBoxes = document.getElementById('columnVisibilityCheckboxes');
-      if (colVisibilityBoxes) colVisibilityBoxes.innerHTML = '';
-      const chartBtn = document.getElementById('sectionDlChart');
-      if (chartBtn) chartBtn.style.display = 'none';
-      const plotTitleEl = document.getElementById('plotSectionTitle');
-      if (plotTitleEl) plotTitleEl.textContent = 'Activity summary';
-      const plotContainer = document.getElementById('plotContainer');
-      if (activityChartInstance) {
-        activityChartInstance.destroy();
-        activityChartInstance = null;
-      }
-      if (plotContainer) {
-        plotContainer.classList.add('empty-state');
-        plotContainer.innerHTML = 'Running report... previous chart cleared.';
-      }
+    function setResultsRunningOverlay(isRunning) {
+      const resultsEl = document.getElementById('results');
+      if (!resultsEl) return;
+      resultsEl.classList.toggle('running-overlay', !!isRunning);
     }
 
     function applyReportData(data) {
@@ -1651,7 +1628,7 @@
         runBtnText.textContent = 'Run report';
         return;
       }
-      clearCurrentResultsForNewRun();
+      setResultsRunningOverlay(true);
       activeReportAbortController = new AbortController();
       stopBtn.style.display = 'inline-block';
       stopBtn.disabled = false;
@@ -1717,6 +1694,7 @@
         showMessage(msg, 'error');
       } finally {
         activeReportAbortController = null;
+        setResultsRunningOverlay(false);
         loadingEl.classList.remove('visible');
         runBtn.disabled = false;
         runBtnText.textContent = 'Run report';
