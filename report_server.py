@@ -71,6 +71,13 @@ DB_CONNECT_ERROR_MSG = (
     "(packaged app), and confirm MongoDB/SSH tunnel is running."
 )
 
+DEFAULT_RESPONSE_RATE_DENOMINATOR_MODE = "daily_timed_preferred"
+RESPONSE_RATE_DENOMINATOR_DESCRIPTIONS = {
+    "daily_timed_preferred": "daily timed EMA when available; otherwise PA/EMA notifications",
+    "pa_ema_only": "PA/EMA notifications only",
+    "sum_both": "daily timed EMA + PA/EMA notifications",
+}
+
 
 def _check_api_key():
     if not REPORT_API_KEY:
@@ -468,7 +475,39 @@ def _safe_mean_sd(values):
         return None, None
 
 
-def compute_study_summary(participant_ids, table, display_label, col_labels, collections_queried=None):
+def _normalize_response_rate_mode(mode):
+    m = str(mode or "").strip().lower()
+    if m in RESPONSE_RATE_DENOMINATOR_DESCRIPTIONS:
+        return m
+    return DEFAULT_RESPONSE_RATE_DENOMINATOR_MODE
+
+
+def _response_rate_denominator_for_row(row, mode):
+    def _int(v):
+        try:
+            return int(v) if v is not None and v != "" else 0
+        except (TypeError, ValueError):
+            return 0
+
+    daily = _int((row or {}).get("log_daily_timed_ema"))
+    pa = _int((row or {}).get("log_pa_ema_notifications"))
+
+    if mode == "pa_ema_only":
+        return pa
+    if mode == "sum_both":
+        return daily + pa
+    # Default: daily_timed_preferred
+    return daily if daily > 0 else pa
+
+
+def compute_study_summary(
+    participant_ids,
+    table,
+    display_label,
+    col_labels,
+    collections_queried=None,
+    response_rate_denominator_mode=DEFAULT_RESPONSE_RATE_DENOMINATOR_MODE,
+):
     """
     Compute publication-ready summary stats from the report table.
     collections_queried: list of collection keys actually included in the report (e.g. from run_report).
@@ -499,15 +538,13 @@ def compute_study_summary(participant_ids, table, display_label, col_labels, col
         mean_val, sd_val = _safe_mean_sd(counts)
         mean_sd_per_collection[coll] = {"label": label, "mean": mean_val, "sd": sd_val, "queried": True}
 
-    # Response rate: submitted surveys / daily timed EMA triggers (per participant, then mean/sd)
+    # Response rate: submitted surveys / selected trigger denominator (per participant, then mean/sd)
+    rr_mode = _normalize_response_rate_mode(response_rate_denominator_mode)
+    rr_denom_desc = RESPONSE_RATE_DENOMINATOR_DESCRIPTIONS[rr_mode]
     response_rates = []
     for pid in participant_ids:
         row = table.get(pid, {})
-        denom = row.get("log_daily_timed_ema") or row.get("log_pa_ema_notifications") or 0
-        try:
-            denom = int(denom)
-        except (TypeError, ValueError):
-            denom = 0
+        denom = _response_rate_denominator_for_row(row, rr_mode)
         num = row.get("surveys", 0)
         try:
             num = int(num)
@@ -522,10 +559,7 @@ def compute_study_summary(participant_ids, table, display_label, col_labels, col
         except (TypeError, ValueError):
             return 0
     total_surveys = sum(_int(table.get(pid, {}).get("surveys")) for pid in participant_ids)
-    total_triggers = sum(
-        _int(table.get(pid, {}).get("log_daily_timed_ema") or table.get(pid, {}).get("log_pa_ema_notifications"))
-        for pid in participant_ids
-    )
+    total_triggers = sum(_response_rate_denominator_for_row(table.get(pid, {}), rr_mode) for pid in participant_ids)
     overall_response_rate = (total_surveys / total_triggers) if total_triggers > 0 else None
 
     # Red flag count
@@ -558,9 +592,10 @@ def compute_study_summary(participant_ids, table, display_label, col_labels, col
     metrics_for_export = [
         ("n_participants", str(n), "Number of participants with at least one record in the selected time window"),
         ("date_range", display_label, "Time window of the report (e.g. last 7 days or custom range)"),
-        ("response_rate_mean", str(response_rate_mean) if response_rate_mean is not None else "N/A", "Mean EMA/survey response rate (submitted / triggers) per participant"),
+        ("response_rate_denominator_mode", rr_mode, "Mode used for response-rate denominator"),
+        ("response_rate_mean", str(response_rate_mean) if response_rate_mean is not None else "N/A", f"Mean EMA/survey response rate (submitted / {rr_denom_desc}) per participant"),
         ("response_rate_sd", str(response_rate_sd) if response_rate_sd is not None else "N/A", "SD of per-participant response rate"),
-        ("response_rate_overall", str(round(overall_response_rate, 4)) if overall_response_rate is not None else "N/A", "Overall response rate (total submitted / total triggers)"),
+        ("response_rate_overall", str(round(overall_response_rate, 4)) if overall_response_rate is not None else "N/A", f"Overall response rate (total submitted / total {rr_denom_desc})"),
         ("n_with_red_flag", str(n_red_flag), "Number of participants with ≥1 red flag (wristband low 1h+ 9AM–10PM)"),
         ("pct_with_red_flag", str(pct_red_flag) + "%", "Percent of participants with ≥1 red flag"),
         ("n_no_or_minimal_data", str(n_no_data), "Number of participants with no location, ENMO, or survey records in window"),
@@ -592,6 +627,8 @@ def compute_study_summary(participant_ids, table, display_label, col_labels, col
         "response_rate_mean": response_rate_mean,
         "response_rate_sd": response_rate_sd,
         "response_rate_overall": overall_response_rate,
+        "response_rate_denominator_mode": rr_mode,
+        "response_rate_denominator_description": rr_denom_desc,
         "n_valid_response_rate": len(response_rates),
         "mean_sd_per_collection": mean_sd_per_collection,
         "n_red_flag": n_red_flag,
@@ -665,6 +702,7 @@ def api_report():
     include_left_wristband_mac = data.get("include_left_wristband_mac", True)
     include_right_wristband_mac = data.get("include_right_wristband_mac", True)
     include_phone_id = data.get("include_phone_id", True)
+    response_rate_denominator_mode = data.get("response_rate_denominator_mode", DEFAULT_RESPONSE_RATE_DENOMINATOR_MODE)
     if last_days is not None and start_time is None and end_time is None:
         last_hours = None
     try:
@@ -747,7 +785,14 @@ def api_report():
                 for coll in plot_collections
             ],
         }
-    payload["study_summary"] = compute_study_summary(participant_ids, table, display_label, col_labels, coll_list)
+    payload["study_summary"] = compute_study_summary(
+        participant_ids,
+        table,
+        display_label,
+        col_labels,
+        coll_list,
+        response_rate_denominator_mode=response_rate_denominator_mode,
+    )
     return jsonify(payload)
 
 

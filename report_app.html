@@ -1321,8 +1321,8 @@
       var formula = {
         n_participants: 'Count of participants with ≥1 record in the selected time window.',
         date_range: 'Time window of the report (e.g. last 7 days, last 30 days, or custom range).',
-        response_rate_mean_sd: 'Per participant: submitted surveys ÷ (daily timed EMA or PA/EMA notifications), when denominator &gt; 0; then mean and sample SD across those participants.',
-        response_rate_overall: 'Total submitted surveys ÷ total triggers (daily timed EMA or PA/EMA notifications) over all participants.',
+        response_rate_mean_sd: 'Per participant: submitted surveys ÷ (' + escapeHtml(summary.response_rate_denominator_description || 'daily timed EMA when available; otherwise PA/EMA notifications') + '), when denominator &gt; 0; then mean and sample SD across those participants.',
+        response_rate_overall: 'Total submitted surveys ÷ total ' + escapeHtml(summary.response_rate_denominator_description || 'daily timed EMA when available; otherwise PA/EMA notifications') + ' over all participants.',
         red_flag: 'Count (and %) of participants with ≥1 red flag (wristband battery low for 1h+ between 9AM–10PM local).',
         no_minimal_data: 'Count (and %) of participants with 0 location, 0 ENMO, and 0 survey records in the window.',
         mean_sd_per_collection: ''
