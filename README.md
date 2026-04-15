@@ -14,8 +14,8 @@ MongoDB-backed report for active participants: table and charts by data source (
 
 1. **Clone and enter the repo**
    ```bash
-   git clone https://github.com/foadnamjoo/motionpi-surveillance.git
-   cd motionpi-surveillance
+  git clone https://github.com/foadnamjoo/motionpi-behavior-monitoring.git
+  cd motionpi-behavior-monitoring
    ```
 
 2. **Create a virtual environment and install dependencies**
