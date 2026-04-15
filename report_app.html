@@ -953,6 +953,9 @@
         <button type="button" id="runBtn" class="btn btn-primary">
           <span id="runBtnText">Run report</span>
         </button>
+        <button type="button" id="stopBtn" class="btn btn-secondary" style="display: none; margin-left: 8px;">
+          Stop
+        </button>
       </div>
     </section>
 
@@ -1016,6 +1019,7 @@
   <script>
     let lastResponse = null;
     let activityChartInstance = null;
+    let activeReportAbortController = null;
     const REPORT_COLLECTIONS = ['userlocations', 'userenmos', 'surveys', 'userlogs', 'userbatteries'];
     const DEFAULT_SERVER_URL = 'http://127.0.0.1:5050';
     const SESSION_STORAGE_REPORT_KEY = 'motionpi_last_report';
@@ -1131,6 +1135,48 @@
       const el = document.getElementById('message');
       el.className = 'message';
       el.style.display = 'none';
+    }
+
+    function clearCurrentResultsForNewRun() {
+      lastResponse = null;
+      lastTableRows = null;
+      columnVisibility = {};
+      lastHeaderOrder = null;
+      const metaEl = document.getElementById('meta');
+      if (metaEl) metaEl.innerHTML = '';
+      const quickScanEl = document.getElementById('quickScan');
+      if (quickScanEl) {
+        quickScanEl.innerHTML = '';
+        quickScanEl.style.display = 'none';
+      }
+      const summaryEl = document.getElementById('studySummaryPanel');
+      if (summaryEl) {
+        summaryEl.innerHTML = '';
+        summaryEl.style.display = 'none';
+      }
+      const tableWrap = document.getElementById('tableWrapper');
+      if (tableWrap) tableWrap.innerHTML = '<p class="empty-state">Running report... previous results cleared.</p>';
+      const tableLegend = document.getElementById('tableLegend');
+      if (tableLegend) tableLegend.style.display = 'none';
+      const tableSectionHeader = document.querySelector('.table-section-header');
+      if (tableSectionHeader) tableSectionHeader.style.display = 'none';
+      const colVisibilityRow = document.getElementById('columnVisibilityRow');
+      if (colVisibilityRow) colVisibilityRow.style.display = 'none';
+      const colVisibilityBoxes = document.getElementById('columnVisibilityCheckboxes');
+      if (colVisibilityBoxes) colVisibilityBoxes.innerHTML = '';
+      const chartBtn = document.getElementById('sectionDlChart');
+      if (chartBtn) chartBtn.style.display = 'none';
+      const plotTitleEl = document.getElementById('plotSectionTitle');
+      if (plotTitleEl) plotTitleEl.textContent = 'Activity summary';
+      const plotContainer = document.getElementById('plotContainer');
+      if (activityChartInstance) {
+        activityChartInstance.destroy();
+        activityChartInstance = null;
+      }
+      if (plotContainer) {
+        plotContainer.classList.add('empty-state');
+        plotContainer.innerHTML = 'Running report... previous chart cleared.';
+      }
     }
 
     function applyReportData(data) {
@@ -1589,6 +1635,7 @@
 
     document.getElementById('runBtn').addEventListener('click', async () => {
       const runBtn = document.getElementById('runBtn');
+      const stopBtn = document.getElementById('stopBtn');
       const runBtnText = document.getElementById('runBtnText');
       const useCustom = document.getElementById('timeModeCustom').checked;
       const timeWindow = document.getElementById('timeWindow').value;
@@ -1604,6 +1651,10 @@
         runBtnText.textContent = 'Run report';
         return;
       }
+      clearCurrentResultsForNewRun();
+      activeReportAbortController = new AbortController();
+      stopBtn.style.display = 'inline-block';
+      stopBtn.disabled = false;
 
       const selected = Array.from(document.querySelectorAll('input[name="collection"]:checked')).map(c => c.value);
       const body = { timezone: 'America/Denver', collections: selected.length ? selected : REPORT_COLLECTIONS };
@@ -1640,6 +1691,7 @@
           method: 'POST',
           headers: headers,
           body: JSON.stringify(body),
+          signal: activeReportAbortController.signal,
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
@@ -1652,6 +1704,11 @@
         saveReportToSession();
       } catch (e) {
         let msg = e.message || 'Request failed';
+        if (e.name === 'AbortError') {
+          msg = 'Report run stopped.';
+          showMessage(msg, 'success');
+          return;
+        }
         if (msg === 'Failed to fetch' || msg.includes('fetch')) {
           msg = 'Could not reach the report server. Make sure the server is running and open this app at http://127.0.0.1:5050/';
         } else {
@@ -1659,9 +1716,17 @@
         }
         showMessage(msg, 'error');
       } finally {
+        activeReportAbortController = null;
         loadingEl.classList.remove('visible');
         runBtn.disabled = false;
         runBtnText.textContent = 'Run report';
+        stopBtn.style.display = 'none';
+      }
+    });
+
+    document.getElementById('stopBtn').addEventListener('click', function() {
+      if (activeReportAbortController) {
+        activeReportAbortController.abort();
       }
     });
 
