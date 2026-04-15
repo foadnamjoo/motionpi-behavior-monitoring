@@ -1,5 +1,13 @@
+## Demo Part 1 — Configure and Run
+
 <p align="center">
-  <img src="assets/demo.gif" alt="MotionPI demo" width="100%" />
+  <img src="assets/demo_part1.gif" alt="MotionPI demo part 1" width="100%" />
+</p>
+
+## Demo Part 2 — Results and Interaction
+
+<p align="center">
+  <img src="assets/demo_part2.gif" alt="MotionPI demo part 2" width="100%" />
 </p>
 
 # MotionPI Active Participants Report
