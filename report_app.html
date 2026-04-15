@@ -1163,12 +1163,28 @@
         const canvas = document.createElement('canvas');
         wrap.appendChild(canvas);
         plotContainer.appendChild(wrap);
+        // High-contrast palette with stable label mapping so similar metrics stay visually distinct.
         const STACKED_COLORS = [
-          '#0f766e', '#0369a1', '#7c3aed', '#ca8a04', '#dc2626',
-          '#0d9488', '#0284c7', '#8b5cf6', '#eab308', '#ef4444',
+          '#0072B2', '#E69F00', '#009E73', '#CC79A7', '#D55E00',
+          '#56B4E9', '#F0E442', '#332288', '#117733', '#AA4499',
+          '#44AA99', '#882255',
         ];
+        function getDatasetColor(label, i) {
+          const l = String(label || '').toLowerCase();
+          if (l.includes('non-wear')) return '#AA4499';
+          if (l.includes('location')) return '#0072B2';
+          if (l.includes('enmo')) return '#E69F00';
+          if (l.includes('surveys') || l.includes('submitted survey')) return '#009E73';
+          if (l.includes('logs')) return '#CC79A7';
+          if (l.includes('left wristband') && l.includes('below 20')) return '#D55E00';
+          if (l.includes('right wristband') && l.includes('below 20')) return '#56B4E9';
+          if (l.includes('phone battery') && l.includes('below 10')) return '#332288';
+          if (l.includes('batteries')) return '#F0E442';
+          if (l.includes('red flag')) return '#882255';
+          return STACKED_COLORS[i % STACKED_COLORS.length];
+        }
         const datasets = (data.chart_data.datasets || []).map(function(d, i) {
-          const c = STACKED_COLORS[i % STACKED_COLORS.length];
+          const c = getDatasetColor(d.label, i);
           return {
             label: d.label,
             data: d.data,
