@@ -1352,7 +1352,7 @@
 
     // Columns that exist in the table can be shown/hidden by the user via checkboxes
     const CUSTOMIZABLE_COLUMN_LABELS = [
-      'participantID', 'location', 'ENMO', 'surveys',
+      'participantID', 'location', 'ENMO', 'surveys', 'Non-wear episodes (≥60 min low ENMO)',
       'Red flag (1h low wristband 9AM–10PM)', 'submitted survey', 'activity survey expired', 'PA survey denied', 'PA/EMA notifications arrived', 'daily timed EMA',
       'batteries', 'left wristband, below 20% battery alerts', 'right wristband, below 20% battery alerts', 'phone battery below 10% alerts',
       'left wristband MAC', 'right wristband MAC', 'phone ID',
@@ -1370,6 +1370,7 @@
       'phone ID': 'Identifier of the phone used by the participant (last 4 characters shown). Shown when phone battery alerts are included.',
       'location': 'Number of location (GPS) records in the selected time range.',
       'ENMO': 'Number of ENMO (activity/motion) records in the selected time range.',
+      'Non-wear episodes (≥60 min low ENMO)': 'Count of episodes with at least 60 consecutive minutes of low ENMO, used as a non-wear proxy.',
       'surveys': 'Number of survey responses in the selected time range.',
       'submitted survey': 'Number of submitted survey responses in the selected time range.',
       'logs': 'Total log entries in the time range (wristband connect/disconnect, survey triggers, data collection, battery alerts). See Help for event details.',
