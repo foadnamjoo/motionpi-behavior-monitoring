@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/demo.gif" alt="MotionPI demo" width="100%" />
+</p>
+
 # MotionPI Active Participants Report
 
 MongoDB-backed report for active participants: table and charts by data source (location, ENMO, surveys, logs, batteries) with configurable time window and timezone.
@@ -14,8 +18,8 @@ MongoDB-backed report for active participants: table and charts by data source (
 
 1. **Clone and enter the repo**
    ```bash
-  git clone https://github.com/foadnamjoo/motionpi-behavior-monitoring.git
-  cd motionpi-behavior-monitoring
+   git clone https://github.com/foadnamjoo/motionpi-behavior-monitoring.git
+   cd motionpi-behavior-monitoring
    ```
 
 2. **Create a virtual environment and install dependencies**
