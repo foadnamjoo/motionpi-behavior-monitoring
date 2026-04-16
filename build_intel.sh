@@ -33,20 +33,21 @@ if [[ ! -d "$INTEL_VENV" ]]; then
   fi
 fi
 
-source "$INTEL_VENV/bin/activate"
-ARCH=$(python3 -c "import platform; print(platform.machine())")
+PY_VENV="$INTEL_VENV/bin/python3"
+PIP_VENV="$INTEL_VENV/bin/pip"
+ARCH=$(arch -x86_64 "$PY_VENV" -c "import platform; print(platform.machine())")
 if [[ "$ARCH" != "x86_64" ]]; then
   echo "Expected x86_64 in venv_intel, got: $ARCH. Remove venv_intel and re-run."
   exit 1
 fi
 
 echo "Installing/updating dependencies (Intel)..."
-pip install --quiet --upgrade pip
-pip install --quiet -r requirements.txt
-pip install --quiet pyinstaller
+arch -x86_64 "$PIP_VENV" install --quiet --upgrade pip
+arch -x86_64 "$PIP_VENV" install --quiet -r requirements.txt
+arch -x86_64 "$PIP_VENV" install --quiet pyinstaller
 
 echo "Building app for Intel (x86_64)..."
-pyinstaller --clean MotionPI_Report.spec
+arch -x86_64 "$INTEL_VENV/bin/pyinstaller" --clean MotionPI_Report.spec
 
 echo "Adding config and README..."
 cp env.dist dist/config.env
